@@ -5,7 +5,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 
 ## Phase 1: Fail fast on infrastructure and the importer
 
-- [ ] **T1: Backend skeleton + local Postgres** (S–M)
+- [x] **T1: Backend skeleton + local Postgres** (S–M)
   - Acceptance: `uv sync` works; `GET /api/health` returns `{"status":"ok"}` after running `SELECT 1` against the DB; a
     DB outage returns 503; settings come from env (`DATABASE_URL`, `MAX_UPLOAD_MB`, `CORS_ORIGINS`).
   - Verify: `docker compose up -d db && cd backend && uv run pytest -q` (health test with DB up; 503 test with a bad URL).

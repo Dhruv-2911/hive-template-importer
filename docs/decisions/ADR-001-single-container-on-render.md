@@ -19,7 +19,7 @@ Build one multi-stage Docker image. The first stage builds the Next.js static ex
 The container start command is:
 
 ```
-alembic upgrade head && python -m app.seed && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+alembic upgrade head && python -m app.seed && uvicorn app.main:create_app --factory --host 0.0.0.0 --port $PORT
 ```
 
 An external uptime monitor requests `/api/health` every 5 minutes so the free instance doesn't go to sleep.

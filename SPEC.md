@@ -84,7 +84,7 @@ in an "Unclassified" group, and a blank section or item name is kept under "(bla
 ## Tech Stack
 
 - **Backend:** Python 3.12, FastAPI, SQLAlchemy 2 + psycopg 3, Alembic, openpyxl, nh3, pydantic-settings.
-  Dev: pytest, pytest-cov, httpx, ruff. Managed with uv.
+  Dev: pytest, pytest-cov, httpx2 (Starlette test client), ruff. Managed with uv.
 - **Frontend:** Next.js (App Router, `output: 'export'`, `trailingSlash: true`), TypeScript strict, Tailwind CSS,
   TanStack Query, TipTap, DOMPurify, openapi-typescript. Dev: ESLint, Playwright.
 - **Database:** Postgres 16. Local: docker compose. Production: **Supabase via the session pooler** (ADR-002). RLS is
@@ -135,13 +135,13 @@ Frontend routes (static export, ADR-008): `/` → the sample template · `/templ
 ## Commands
 
 ```bash
-docker compose up -d db                                  # local Postgres 16 on :5432
+docker compose up -d db                                  # local Postgres 16 on :5433 (5432 is often taken)
 
 cd backend
 uv sync
 uv run alembic upgrade head
 uv run python -m app.seed                                # imports the Commercial export if no sample exists
-uv run uvicorn app.main:app --reload --port 8000
+uv run uvicorn app.main:create_app --factory --reload --port 8000
 uv run pytest -q
 uv run pytest --cov=app/importer --cov-fail-under=90
 uv run ruff check . && uv run ruff format --check .
@@ -156,7 +156,7 @@ npx playwright test                                      # demo path against the
 
 docker build -t hive-importer .
 docker run --rm -p 8000:8000 -e PORT=8000 -e DATABASE_URL=... hive-importer
-# container start: alembic upgrade head && python -m app.seed && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+# container start: alembic upgrade head && python -m app.seed && uvicorn app.main:create_app --factory --host 0.0.0.0 --port $PORT
 
 python scripts/profile_export.py "<export file>"         # profile any export before trusting the parser with it
 ```
