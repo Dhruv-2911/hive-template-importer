@@ -26,6 +26,8 @@ it can **trust is complete**. The user works at a desk, is not technical, and ha
   dropped, truncated or re-worded.
 - Items are grouped by (section, item) pair. Comments are identified by source row, **not by name**. Residential rows
   263 and 264 share a name, have different text, and must both survive.
+- A section or item is a **contiguous run** of rows. If a name reappears after a different one, it becomes a separate
+  section or item in file order, never merged upwards (merging would reorder rows). Neither real export does this.
 - Plain-text names are entity-decoded once (`Doors, Windows &amp; Interior` → `Doors, Windows & Interior`). Comment HTML is
   stored exactly as it appears in the cell (ADR-005).
 - The format is detected from the file's bytes, so an xlsx named `.xls` is accepted.
@@ -42,6 +44,8 @@ it can **trust is complete**. The user works at a desk, is not technical, and ha
   - `DUPLICATE_NAME_IN_ITEM`: Residential rows 263 and 264.
   - `UNKNOWN_TYPE`, `BLANK_SECTION`, `BLANK_ITEM`: none in either file; covered by generated fixtures.
   - `UNMODELLED_VALUE`: a value in a column we keep but don't display (e.g. a Default Photo). None in either file.
+  - `VALUE_NOT_UNDERSTOOD`: a value in a column we display that isn't in the expected form (e.g. Category `high`).
+    It's shown as empty and kept as written in the source data. None in either file.
 - **Kept but not editable:** source columns we store but don't edit, with how many rows fill each one
   (e.g. Residential Default Value: 1 row, Recommendation: 4 rows).
 - **Not in the export:** template name, severity labels, recommendation labels, rating options, section-level text and

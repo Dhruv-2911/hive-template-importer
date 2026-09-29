@@ -40,7 +40,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Files: `backend/app/importer/detect.py`, `backend/app/importer/workbook.py`, `backend/app/importer/errors.py`,
     `backend/tests/fixtures/make_fixtures.py`, `backend/tests/test_importer_failures.py`
 
-- [ ] **T5: Importer: rows → template tree, with golden tests on both exports** (M)
+- [x] **T5: Importer: rows → template tree, with golden tests on both exports** (M)
   - Acceptance: builds sections → items → comments in row order; items keyed by (section, item); comments identified by
     `source_row`; names decoded once, comment HTML stored exactly; types, severity, answer type, options, recommendation,
     default value and all 42 raw cells captured. Commercial = 12/58/346 (266/72/8), Residential = 12/63/366 (279/76/11);
