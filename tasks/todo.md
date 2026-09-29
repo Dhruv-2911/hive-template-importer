@@ -61,7 +61,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
     `backend/tests/test_importer_variants.py`, `backend/tests/test_importer_golden.py`
 
 ### Checkpoint A: after T1–T6
-- [ ] `uv run pytest -q` passes, with importer coverage ≥ 90%
+- [x] `uv run pytest -q` passes, with importer coverage ≥ 90% (71 tests, 98% on `app/importer`)
 - [ ] The Render URL is live and `/api/health` reaches Supabase
 - [ ] **Review with you:** walk through the golden values and report output for both files before building on them
 
