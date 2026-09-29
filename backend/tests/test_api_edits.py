@@ -100,3 +100,35 @@ def test_renaming_something_that_does_not_exist_is_not_found(client, kind):
 
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "NOT_FOUND"
+
+
+def test_editing_comment_text_saves_cleaned_html_and_keeps_the_original(client, clean_db, tree):
+    comment = tree["sections"][2]["items"][1]["comments"][1]
+    new_text = "<p>Shingles are <strong>worn</strong>.</p><script>alert(1)</script>"
+
+    response = client.patch(f"/api/comments/{comment['id']}", json={"text_html": new_text})
+
+    assert response.status_code == 200
+    saved = response.json()["text_html"]
+    assert "<strong>worn</strong>" in saved and "<script" not in saved
+    row = stored(clean_db, "comments", comment["id"])
+    assert row["text_html"] == saved
+    assert row["source_text_html"] == comment["source_text_html"]
+    assert row["name"] == comment["name"]  # editing the text leaves the name alone
+
+
+def test_comment_text_can_be_emptied(client, tree):
+    comment = tree["sections"][2]["items"][1]["comments"][1]
+
+    response = client.patch(f"/api/comments/{comment['id']}", json={"text_html": ""})
+
+    assert response.json()["text_html"] == ""
+
+
+def test_overlong_comment_text_is_refused(client, tree):
+    comment = tree["sections"][2]["items"][1]["comments"][1]
+
+    response = client.patch(f"/api/comments/{comment['id']}", json={"text_html": "x" * 50_001})
+
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "TEXT_TOO_LONG"

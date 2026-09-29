@@ -8,10 +8,12 @@ from sqlalchemy.orm import Session
 
 from app.api_errors import ApiError, not_found
 from app.models import Comment, Item, Section, Template
+from app.sanitize import clean_comment_html
 from app.schemas import CommentChange, CommentOut, ErrorBody, NameChange, NamedOut
 
 router = APIRouter()
 MAX_NAME_LENGTH = 200
+MAX_TEXT_LENGTH = 50_000  # the longest comment in either export is 665 characters
 ERRORS = {404: {"model": ErrorBody}, 422: {"model": ErrorBody}}
 
 
@@ -72,6 +74,12 @@ def edit_comment(request: Request, comment_id: uuid.UUID, change: CommentChange)
             raise not_found("comment")
         if change.name is not None:
             comment.name = valid_name(change.name)
+        if change.text_html is not None:
+            if len(change.text_html) > MAX_TEXT_LENGTH:
+                raise ApiError(
+                    422, "TEXT_TOO_LONG", f"Comment text can be at most {MAX_TEXT_LENGTH} characters long."
+                )
+            comment.text_html = clean_comment_html(change.text_html)
         comment.edited_at = func.now()
         template_id = session.scalar(
             select(Section.template_id)

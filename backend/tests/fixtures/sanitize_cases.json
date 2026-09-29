@@ -1,0 +1,13 @@
+{
+  "about": "Shared by the server (nh3, tests/test_sanitize.py) and the browser (DOMPurify, frontend/e2e/sanitize.spec.ts) so the two allowlists can't drift apart (ADR-005). Each case lists fragments that must survive and fragments that must be gone.",
+  "cases": [
+    {"name": "formatting survives", "html": "<p><strong>Bold</strong>, <em>italic</em>, <u>underlined</u></p>", "keep": ["<strong>Bold</strong>", "<em>italic</em>", "<u>underlined</u>"], "drop": []},
+    {"name": "lists survive", "html": "<ul><li>one</li></ul><ol><li>two</li></ol>", "keep": ["<ul>", "<li>one</li>", "<ol>"], "drop": []},
+    {"name": "links keep their address", "html": "<p><a href=\"https://www.example.com/guide\">A guide</a></p>", "keep": ["href=\"https://www.example.com/guide\"", "A guide"], "drop": []},
+    {"name": "scripts are removed", "html": "<p>ok</p><script>alert(1)</script>", "keep": ["<p>ok</p>"], "drop": ["<script", "alert(1)"]},
+    {"name": "event handlers are removed", "html": "<p onclick=\"alert(1)\">ok</p>", "keep": ["ok"], "drop": ["onclick", "alert(1)"]},
+    {"name": "javascript links are removed", "html": "<a href=\"javascript:alert(1)\">x</a>", "keep": ["x"], "drop": ["javascript:"]},
+    {"name": "inline styles are removed", "html": "<p style=\"color:red\">ok</p>", "keep": ["ok"], "drop": ["style=", "color:red"]},
+    {"name": "images and frames are removed", "html": "<p>ok</p><img src=\"https://x/y.png\"><iframe src=\"https://x\"></iframe>", "keep": ["<p>ok</p>"], "drop": ["<img", "<iframe"]}
+  ]
+}

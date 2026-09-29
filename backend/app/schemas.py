@@ -153,6 +153,7 @@ class NameChange(BaseModel):
 
 class CommentChange(BaseModel):
     name: str | None = None
+    text_html: str | None = None
 
 
 class NamedOut(BaseModel):
