@@ -121,7 +121,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Files: `backend/app/routes/edits.py`, `backend/app/services/edits.py`, `backend/tests/test_api_edits.py`,
     `frontend/components/InlineName.tsx`, `frontend/app/template/page.tsx`
 
-- [ ] **T12: Comment text editor** (M, **highest UI risk**)
+- [x] **T12: Comment text editor** (M, **highest UI risk**)
   - Acceptance: TipTap limited to the ADR-005 allowlist, with the Link extension keeping `target`. It saves only when the
     user changed something. A comment with markup outside the allowlist (e.g. Commercial row 318) opens in HTML mode with
     a notice. The server sanitizes `text_html` with nh3 using the same allowlist. **Show original** works for text.

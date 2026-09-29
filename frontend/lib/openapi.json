@@ -45,6 +45,17 @@
               }
             ],
             "title": "Name"
+          },
+          "text_html": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Html"
           }
         },
         "title": "CommentChange",

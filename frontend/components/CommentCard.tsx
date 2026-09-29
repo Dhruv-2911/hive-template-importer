@@ -1,6 +1,5 @@
 import type { Comment, Notice } from "@/lib/api";
-import { sanitizeCommentHtml } from "@/lib/sanitize";
-
+import { CommentText } from "./CommentText";
 import { InlineName } from "./InlineName";
 
 // The labels Spectora's own export header gives the levels: "Category (-1: Low, 0: Med, 1: High)".
@@ -10,9 +9,15 @@ const SEVERITY: Record<number, { label: string; className: string }> = {
   1: { label: "High", className: "border-red-300 bg-red-50 text-red-800" },
 };
 
-type Props = { comment: Comment; highlighted: boolean; notes: Notice[]; onRename: (name: string) => Promise<unknown> };
+type Props = {
+  comment: Comment;
+  highlighted: boolean;
+  notes: Notice[];
+  onRename: (name: string) => Promise<unknown>;
+  onSaveText: (html: string) => Promise<unknown>;
+};
 
-export function CommentCard({ comment, highlighted, notes, onRename }: Props) {
+export function CommentCard({ comment, highlighted, notes, onRename, onSaveText }: Props) {
   const severity = comment.severity === null ? undefined : SEVERITY[comment.severity];
   // Every limitation and defect in Spectora is a tick box ("boolean"), so only an unusual answer type is shown.
   const usualAnswer = comment.comment_type !== "info" && comment.answer_type === "boolean";
@@ -47,16 +52,7 @@ export function CommentCard({ comment, highlighted, notes, onRename }: Props) {
         {comment.default_value && <Detail term="Default" value={comment.default_value} />}
       </dl>
 
-      {comment.text_html.trim() ? (
-        <div
-          className="comment-html mt-2 text-sm leading-6 text-zinc-800"
-          dangerouslySetInnerHTML={{ __html: sanitizeCommentHtml(comment.text_html) }}
-        />
-      ) : (
-        comment.options.length === 0 && (
-          <p className="mt-2 text-sm italic text-zinc-500">No text in the Spectora export.</p>
-        )
-      )}
+      <CommentText comment={comment} onSave={onSaveText} />
 
       {notes.map((note) => (
         <p key={note.code} role="note" className="mt-2 border-l-2 border-amber-400 bg-amber-50 px-3 py-1.5 text-xs text-amber-950">

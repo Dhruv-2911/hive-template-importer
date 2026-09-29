@@ -59,6 +59,7 @@ export function ItemComments({ section, item, highlightedRow, notesByRow, edits 
                     highlighted={comment.source_row === highlightedRow}
                     notes={notesByRow.get(comment.source_row) ?? []}
                     onRename={(name) => edits.editComment(comment.id, { name })}
+                    onSaveText={(text_html) => edits.editComment(comment.id, { text_html })}
                   />
                 ))}
               </ol>

@@ -13,6 +13,9 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.0",
+    "@tiptap/pm": "^3.31.3",
+    "@tiptap/react": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
     "dompurify": "^3.4.16",
     "next": "16.3.6",
     "react": "19.2.8",

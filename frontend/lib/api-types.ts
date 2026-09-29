@@ -178,6 +178,8 @@ export interface components {
         CommentChange: {
             /** Name */
             name?: string | null;
+            /** Text Html */
+            text_html?: string | null;
         };
         /** CommentOut */
         CommentOut: {
