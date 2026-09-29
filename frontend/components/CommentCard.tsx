@@ -1,4 +1,4 @@
-import type { Comment } from "@/lib/api";
+import type { Comment, Notice } from "@/lib/api";
 import { sanitizeCommentHtml } from "@/lib/sanitize";
 
 // The labels Spectora's own export header gives the levels: "Category (-1: Low, 0: Med, 1: High)".
@@ -8,7 +8,9 @@ const SEVERITY: Record<number, { label: string; className: string }> = {
   1: { label: "High", className: "border-red-300 bg-red-50 text-red-800" },
 };
 
-export function CommentCard({ comment, highlighted }: { comment: Comment; highlighted: boolean }) {
+type Props = { comment: Comment; highlighted: boolean; notes: Notice[] };
+
+export function CommentCard({ comment, highlighted, notes }: Props) {
   const severity = comment.severity === null ? undefined : SEVERITY[comment.severity];
   // Every limitation and defect in Spectora is a tick box ("boolean"), so only an unusual answer type is shown.
   const usualAnswer = comment.comment_type !== "info" && comment.answer_type === "boolean";
@@ -46,6 +48,13 @@ export function CommentCard({ comment, highlighted }: { comment: Comment; highli
           <p className="mt-2 text-sm italic text-zinc-500">No text in the Spectora export.</p>
         )
       )}
+
+      {notes.map((note) => (
+        <p key={note.code} role="note" className="mt-2 border-l-2 border-amber-400 bg-amber-50 px-3 py-1.5 text-xs text-amber-950">
+          <span className="font-semibold">From the import: </span>
+          {note.message}
+        </p>
+      ))}
 
       {comment.options.length > 0 && (
         <ul aria-label="Answer options" className="mt-2 flex flex-wrap gap-1.5">

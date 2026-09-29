@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-import { ApiError, api, type TemplateTree } from "@/lib/api";
+import { ApiError, api, type Notice, type TemplateTree } from "@/lib/api";
 
 import { ItemComments } from "./ItemComments";
 import { SectionTree } from "./SectionTree";
@@ -18,6 +18,10 @@ export function TemplateScreen() {
   const row = Number(params.get("row")) || undefined;
   const query = useQuery({ queryKey: ["template", id], queryFn: () => api.getTemplate(id!), enabled: !!id });
   const selection = query.data ? select(query.data, params.get("item"), row) : undefined;
+  // The import report's notices, shown on the comments they're about (SPEC.md US3). A copy shares its original's.
+  const runId = query.data?.import_run_id ?? undefined;
+  const report = useQuery({ queryKey: ["import", runId], queryFn: () => api.getImport(runId!), enabled: !!runId });
+  const notesByRow = notesFor(report.data?.report?.notices ?? []);
   const main = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -59,7 +63,14 @@ export function TemplateScreen() {
       <div className="flex min-h-0 flex-1">
         <SectionTree sections={template.sections} selectedItemId={selection?.item.id} onSelect={openItem} />
         <main ref={main} className="relative min-w-0 flex-1 overflow-y-auto bg-white">
-          {selection && <ItemComments section={selection.section} item={selection.item} highlightedRow={row} />}
+          {selection && (
+            <ItemComments
+              section={selection.section}
+              item={selection.item}
+              highlightedRow={row}
+              notesByRow={notesByRow}
+            />
+          )}
         </main>
       </div>
     </div>
@@ -84,6 +95,14 @@ function TemplateHeader({ template }: { template: TemplateTree }) {
           Imported from Spectora · {template.sections.length} sections · {items.length} items · {comments} comments
         </p>
       </div>
+      {template.import_run_id && (
+        <Link
+          href={`/import/?id=${template.import_run_id}`}
+          className="shrink-0 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
+        >
+          Import report
+        </Link>
+      )}
     </header>
   );
 }
@@ -92,6 +111,12 @@ function Badge({ children }: { children: string }) {
   return (
     <span className="rounded border border-zinc-300 px-1.5 py-px text-xs font-medium text-zinc-600">{children}</span>
   );
+}
+
+function notesFor(notices: Notice[]): Map<number, Notice[]> {
+  const byRow = new Map<number, Notice[]>();
+  for (const notice of notices) byRow.set(notice.row, [...(byRow.get(notice.row) ?? []), notice]);
+  return byRow;
 }
 
 /** The item to show: the one in the URL, else the one holding the linked row, else the first. */

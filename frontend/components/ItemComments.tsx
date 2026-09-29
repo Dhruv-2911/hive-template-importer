@@ -1,4 +1,4 @@
-import type { Comment, Item, Section } from "@/lib/api";
+import type { Comment, Item, Notice, Section } from "@/lib/api";
 
 import { CommentCard } from "./CommentCard";
 
@@ -10,9 +10,9 @@ const GROUPS: { type: string; label: string; empty: string }[] = [
   { type: "unknown", label: "Unclassified", empty: "" },
 ];
 
-type Props = { section: Section; item: Item; highlightedRow: number | undefined };
+type Props = { section: Section; item: Item; highlightedRow: number | undefined; notesByRow: Map<number, Notice[]> };
 
-export function ItemComments({ section, item, highlightedRow }: Props) {
+export function ItemComments({ section, item, highlightedRow, notesByRow }: Props) {
   const byType = (type: string): Comment[] => item.comments.filter((c) => c.comment_type === type);
   return (
     <>
@@ -31,7 +31,12 @@ export function ItemComments({ section, item, highlightedRow }: Props) {
             {comments.length ? (
               <ol className="divide-y divide-zinc-200 overflow-hidden rounded-md border border-zinc-200">
                 {comments.map((comment) => (
-                  <CommentCard key={comment.id} comment={comment} highlighted={comment.source_row === highlightedRow} />
+                  <CommentCard
+                    key={comment.id}
+                    comment={comment}
+                    highlighted={comment.source_row === highlightedRow}
+                    notes={notesByRow.get(comment.source_row) ?? []}
+                  />
                 ))}
               </ol>
             ) : (

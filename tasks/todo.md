@@ -102,7 +102,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 - [x] **The live URL opens on the seeded Commercial template** (4.7 s from India, no console errors; 2026-09-29)
 - [ ] Review with you
 
-- [ ] **T10: Upload and import report UI** (M; slices: T10a list + upload, T10b report page, T10c import notes on
+- [x] **T10: Upload and import report UI** (M; slices: T10a list + upload, T10b report page, T10c import notes on
   comments + report link. Brings T14's Playwright harness forward against a `hive_e2e` database)
   - Acceptance: `/templates/` lists templates and has an upload control. After an upload, `/import/?id=` shows
     reconciliation, "N of N comments match the source", notices with row numbers linking to the comment, kept-but-not-editable
