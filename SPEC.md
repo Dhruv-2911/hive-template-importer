@@ -91,7 +91,7 @@ in an "Unclassified" group, and a blank section or item name is kept under "(bla
   Dev: pytest, pytest-cov, httpx2 (Starlette test client), ruff. Managed with uv.
 - **Frontend:** Next.js (App Router, `output: 'export'`, `trailingSlash: true`), TypeScript strict, Tailwind CSS,
   TanStack Query, TipTap, DOMPurify, openapi-typescript. Dev: ESLint, Playwright.
-- **Database:** Postgres 16. Local: docker compose. Production: **Supabase via the session pooler** (ADR-002). RLS is
+- **Database:** Postgres 17 (Supabase runs 17.6). Local: docker compose. Production: **Supabase via the session pooler** (ADR-002). RLS is
   enabled with no policies.
 - **Deploy:** one multi-stage Docker image as a **Render** web service (ADR-001), kept awake by an external uptime
   monitor that requests `/api/health`. Blueprint in `render.yaml`.
@@ -139,7 +139,7 @@ Frontend routes (static export, ADR-008): `/` → the sample template · `/templ
 ## Commands
 
 ```bash
-docker compose up -d db                                  # local Postgres 16 on :5433 (5432 is often taken)
+docker compose up -d db                                  # local Postgres 17 on :5433 (5432 is often taken)
 
 cd backend
 uv sync

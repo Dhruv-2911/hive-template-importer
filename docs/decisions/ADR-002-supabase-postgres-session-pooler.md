@@ -42,7 +42,7 @@ Accepted
 - Rejected.
 
 ## Consequences
-- The app works with any Postgres: docker compose Postgres 16 locally and in tests, Supabase in production.
+- The app works with any Postgres: docker compose Postgres 17 locally and in tests, Supabase (17.6) in production.
 - Supabase automatically exposes tables in the `public` schema through its Data API. RLS with no policies blocks that
   API, while the app, which connects as the table owner, is unaffected.
 - Supabase pauses free projects after a period of inactivity. Because `/api/health` touches the database, the uptime

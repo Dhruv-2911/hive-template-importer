@@ -22,7 +22,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Deps: T1
   - Files: `frontend/next.config.ts`, `frontend/app/page.tsx`, `frontend/lib/api.ts`, `Dockerfile`, `backend/app/main.py`
 
-- [ ] **T3: Deploy the skeleton to Render + Supabase** (S)
+- [x] **T3: Deploy the skeleton to Render + Supabase** (S)
   - Acceptance: a Supabase project exists; the session-pooler `DATABASE_URL` is set in Render; `render.yaml` (Docker
     runtime, health check `/api/health`) is committed; the public Render URL returns ok from `/api/health` (proving the
     DB connection); the external uptime monitor is set to 5-minute pings.
@@ -62,7 +62,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 
 ### Checkpoint A: after T1–T6
 - [x] `uv run pytest -q` passes, with importer coverage ≥ 90% (71 tests, 98% on `app/importer`)
-- [ ] The Render URL is live and `/api/health` reaches Supabase
+- [x] The Render URL is live and `/api/health` reaches Supabase (Render Singapore → Supabase ap-south-1 session pooler, 2026-09-29)
 - [ ] **Review with you:** walk through the golden values and report output for both files before building on them
 
 ## Phase 2: Baseline vertical slices
