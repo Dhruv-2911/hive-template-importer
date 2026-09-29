@@ -1,6 +1,8 @@
 import type { Comment, Notice } from "@/lib/api";
 import { sanitizeCommentHtml } from "@/lib/sanitize";
 
+import { InlineName } from "./InlineName";
+
 // The labels Spectora's own export header gives the levels: "Category (-1: Low, 0: Med, 1: High)".
 const SEVERITY: Record<number, { label: string; className: string }> = {
   [-1]: { label: "Low", className: "border-zinc-300 text-zinc-700" },
@@ -8,9 +10,9 @@ const SEVERITY: Record<number, { label: string; className: string }> = {
   1: { label: "High", className: "border-red-300 bg-red-50 text-red-800" },
 };
 
-type Props = { comment: Comment; highlighted: boolean; notes: Notice[] };
+type Props = { comment: Comment; highlighted: boolean; notes: Notice[]; onRename: (name: string) => Promise<unknown> };
 
-export function CommentCard({ comment, highlighted, notes }: Props) {
+export function CommentCard({ comment, highlighted, notes, onRename }: Props) {
   const severity = comment.severity === null ? undefined : SEVERITY[comment.severity];
   // Every limitation and defect in Spectora is a tick box ("boolean"), so only an unusual answer type is shown.
   const usualAnswer = comment.comment_type !== "info" && comment.answer_type === "boolean";
@@ -20,7 +22,14 @@ export function CommentCard({ comment, highlighted, notes }: Props) {
       className={`px-4 py-3 ${highlighted ? "bg-amber-50 ring-2 ring-inset ring-amber-300" : "bg-white"}`}
     >
       <div className="flex items-baseline justify-between gap-4">
-        <h4 className="font-medium text-zinc-900">{comment.name.trim() || <em className="text-zinc-500">(no name)</em>}</h4>
+        <InlineName
+          kind="comment"
+          value={comment.name}
+          source={comment.source_name}
+          onSave={onRename}
+          as="h4"
+          className="font-medium text-zinc-900"
+        />
         <span className="shrink-0 text-xs tabular-nums text-zinc-500" title="Row in the Spectora spreadsheet">
           Row {comment.source_row}
         </span>

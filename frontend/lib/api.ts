@@ -13,6 +13,8 @@ export type ImportCreated = Schemas["ImportCreated"];
 export type ImportRun = Schemas["ImportRunOut"];
 export type ImportReport = Schemas["ImportReport"];
 export type Notice = Schemas["Notice"];
+export type Named = Schemas["NamedOut"];
+export type CommentChange = Schemas["CommentChange"];
 export type Health = { status: "ok" | "unavailable" };
 
 /** The API's error shape: {"error": {"code", "message", "details"}}. The message is written for the inspector. */
@@ -47,6 +49,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return body as T;
 }
 
+function patch(body: unknown): RequestInit {
+  return { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+}
+
 export const api = {
   health: () => request<Health>("/api/health"),
   listTemplates: () => request<TemplateSummary[]>("/api/templates"),
@@ -58,4 +64,8 @@ export const api = {
   },
   getImport: (id: string) => request<ImportRun>(`/api/imports/${encodeURIComponent(id)}`),
   importFileUrl: (id: string) => `${API_BASE}/api/imports/${encodeURIComponent(id)}/file`,
+  renameTemplate: (id: string, name: string) => request<Named>(`/api/templates/${id}`, patch({ name })),
+  renameSection: (id: string, name: string) => request<Named>(`/api/sections/${id}`, patch({ name })),
+  renameItem: (id: string, name: string) => request<Named>(`/api/items/${id}`, patch({ name })),
+  editComment: (id: string, change: CommentChange) => request<Comment>(`/api/comments/${id}`, patch(change)),
 };

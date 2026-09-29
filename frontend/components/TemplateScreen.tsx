@@ -6,6 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import { ApiError, api, type Notice, type TemplateTree } from "@/lib/api";
+import { useTemplateEdits, type TemplateEdits } from "@/lib/useTemplateEdits";
+
+import { InlineName } from "./InlineName";
 
 import { ItemComments } from "./ItemComments";
 import { SectionTree } from "./SectionTree";
@@ -22,6 +25,7 @@ export function TemplateScreen() {
   const runId = query.data?.import_run_id ?? undefined;
   const report = useQuery({ queryKey: ["import", runId], queryFn: () => api.getImport(runId!), enabled: !!runId });
   const notesByRow = notesFor(report.data?.report?.notices ?? []);
+  const edits = useTemplateEdits(id ?? "");
   const main = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -59,7 +63,7 @@ export function TemplateScreen() {
   const openItem = (itemId: string) => router.replace(`/template/?id=${id}&item=${itemId}`, { scroll: false });
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <TemplateHeader template={template} />
+      <TemplateHeader template={template} edits={edits} />
       <div className="flex min-h-0 flex-1">
         <SectionTree sections={template.sections} selectedItemId={selection?.item.id} onSelect={openItem} />
         <main ref={main} className="relative min-w-0 flex-1 overflow-y-auto bg-white">
@@ -69,6 +73,7 @@ export function TemplateScreen() {
               item={selection.item}
               highlightedRow={row}
               notesByRow={notesByRow}
+              edits={edits}
             />
           )}
         </main>
@@ -77,7 +82,7 @@ export function TemplateScreen() {
   );
 }
 
-function TemplateHeader({ template }: { template: TemplateTree }) {
+function TemplateHeader({ template, edits }: { template: TemplateTree; edits: TemplateEdits }) {
   const items = template.sections.flatMap((s) => s.items);
   const comments = items.reduce((total, item) => total + item.comments.length, 0);
   return (
@@ -87,7 +92,14 @@ function TemplateHeader({ template }: { template: TemplateTree }) {
           Templates
         </Link>
         <div className="flex items-center gap-2">
-          <h1 className="truncate text-lg font-semibold text-zinc-900">{template.name}</h1>
+          <InlineName
+            kind="template"
+            value={template.name}
+            source={template.source_name}
+            onSave={edits.renameTemplate}
+            as="h1"
+            className="text-lg font-semibold text-zinc-900"
+          />
           {template.is_sample && <Badge>Sample</Badge>}
           {template.copied_from_id && <Badge>Copy</Badge>}
         </div>

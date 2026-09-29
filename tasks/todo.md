@@ -112,7 +112,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Deps: T9
   - Files: `frontend/app/templates/page.tsx`, `frontend/app/import/page.tsx`, `frontend/components/ImportReport.tsx`, `frontend/components/UploadButton.tsx`
 
-- [ ] **T11: Rename slice (template, section, item, comment name)** (M)
+- [x] **T11: Rename slice (template, section, item, comment name)** (M)
   - Acceptance: `PATCH /api/templates|sections|items/{id}` `{name}` and `PATCH /api/comments/{id}` `{name}` persist;
     `source_name` never changes. Inline edit: Enter saves, Esc cancels. An **Edited** badge and **Show original** appear on changed names.
   - Verify: `uv run pytest tests/test_api_edits.py -q` (persists across a new DB session; `source_*` unchanged); manual:

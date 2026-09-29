@@ -1,6 +1,8 @@
 import type { Comment, Item, Notice, Section } from "@/lib/api";
+import type { TemplateEdits } from "@/lib/useTemplateEdits";
 
 import { CommentCard } from "./CommentCard";
+import { InlineName } from "./InlineName";
 
 // Spectora's three comment types, in its own order, plus a group for rows whose type couldn't be read.
 const GROUPS: { type: string; label: string; empty: string }[] = [
@@ -10,15 +12,35 @@ const GROUPS: { type: string; label: string; empty: string }[] = [
   { type: "unknown", label: "Unclassified", empty: "" },
 ];
 
-type Props = { section: Section; item: Item; highlightedRow: number | undefined; notesByRow: Map<number, Notice[]> };
+type Props = {
+  section: Section;
+  item: Item;
+  highlightedRow: number | undefined;
+  notesByRow: Map<number, Notice[]>;
+  edits: TemplateEdits;
+};
 
-export function ItemComments({ section, item, highlightedRow, notesByRow }: Props) {
+export function ItemComments({ section, item, highlightedRow, notesByRow, edits }: Props) {
   const byType = (type: string): Comment[] => item.comments.filter((c) => c.comment_type === type);
   return (
     <>
       <header className="border-b border-zinc-200 px-8 py-5">
-        <p className="text-sm text-zinc-500">{section.name}</p>
-        <h2 className="text-xl font-semibold text-zinc-900">{item.name}</h2>
+        <InlineName
+          kind="section"
+          value={section.name}
+          source={section.source_name}
+          onSave={(name) => edits.renameSection(section.id, name)}
+          as="p"
+          className="text-sm text-zinc-500"
+        />
+        <InlineName
+          kind="item"
+          value={item.name}
+          source={item.source_name}
+          onSave={(name) => edits.renameItem(item.id, name)}
+          as="h2"
+          className="text-xl font-semibold text-zinc-900"
+        />
       </header>
       {GROUPS.filter((g) => g.type !== "unknown" || byType("unknown").length > 0).map((group) => {
         const comments = byType(group.type);
@@ -36,6 +58,7 @@ export function ItemComments({ section, item, highlightedRow, notesByRow }: Prop
                     comment={comment}
                     highlighted={comment.source_row === highlightedRow}
                     notes={notesByRow.get(comment.source_row) ?? []}
+                    onRename={(name) => edits.editComment(comment.id, { name })}
                   />
                 ))}
               </ol>
