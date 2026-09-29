@@ -1,0 +1,21 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Hive's assignment document: not ours to publish
+Hive_Inspect_Template_Importer_Assignment.pdf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node
+node_modules/
+.next/
+.vercel/
+
+# OS / editor
+.DS_Store
+.vscode/
