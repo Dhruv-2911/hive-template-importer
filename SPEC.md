@@ -56,6 +56,10 @@ it can **trust is complete**. The user works at a desk, is not technical, and ha
 - Left: the section → item tree. Right: the selected item's comments grouped into **Information / Limitations /
   Defects**, with sanitized HTML rendered (links clickable, opening in a new tab).
 - Read-only details for each comment: severity, multiple-choice options, recommendation key, answer type and default value.
+- **Import notes on the comment itself:** every notice the import report holds for a comment's source row (US2) is shown
+  on that comment, e.g. "This comment had an embedded video in Spectora…" on Commercial row 318. They come from the
+  template's stored import report, so a copy shows its original's notes. They describe the import, so they stay after
+  the comment is edited.
 
 **US4: Edit** (ADR-007). Rename the template, sections, items and comment names; edit comment text.
 - Changes save to the database and are still there after a reload and a container restart.
