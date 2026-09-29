@@ -5,9 +5,12 @@ from urllib.parse import urlsplit
 import pytest
 from alembic import command
 from alembic.config import Config
+from fastapi.testclient import TestClient
 from sqlalchemy import Engine, text
 
+from app.config import Settings
 from app.db import make_engine
+from app.main import create_app
 
 # The compose file creates this database next to the app's own (docker compose up -d db).
 DEFAULT_TEST_DATABASE_URL = "postgresql://hive:hive@localhost:5433/hive_test"
@@ -67,3 +70,25 @@ def commercial_bytes() -> bytes:
 @pytest.fixture(scope="session")
 def residential_bytes() -> bytes:
     return RESIDENTIAL_EXPORT.read_bytes()
+
+
+@pytest.fixture
+def make_client(clean_db, database_url):
+    """A client for the real app on an empty test database. Pass Settings overrides as keyword arguments."""
+    clients = []
+
+    def build(**overrides) -> TestClient:
+        settings = Settings(database_url=database_url, frontend_dir="/nonexistent", **overrides)
+        client = TestClient(create_app(settings))
+        client.__enter__()
+        clients.append(client)
+        return client
+
+    yield build
+    for client in clients:
+        client.__exit__(None, None, None)
+
+
+@pytest.fixture
+def client(make_client) -> TestClient:
+    return make_client()

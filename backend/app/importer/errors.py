@@ -62,6 +62,15 @@ def expands_too_large(limit: int) -> ImportFailure:
     )
 
 
+def verification_failed(mismatches: list[dict[str, Any]], mismatched_comments: int) -> ImportFailure:
+    return ImportFailure(
+        "VERIFICATION_FAILED",
+        "Import stopped: what was saved didn't match the file, so nothing was kept. "
+        "Try the upload again; if this keeps happening, the file needs a closer look.",
+        {"mismatched_comments": mismatched_comments, "mismatches": mismatches},
+    )
+
+
 def unreadable_workbook() -> ImportFailure:
     return ImportFailure(
         "UNREADABLE_WORKBOOK",

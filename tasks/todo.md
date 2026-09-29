@@ -67,7 +67,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 
 ## Phase 2: Baseline vertical slices
 
-- [ ] **T7: Schema, import API and in-transaction verification** (M; done as T7a schema + migrations + RLS, then T7b import service + API)
+- [x] **T7: Schema, import API and in-transaction verification** (M; done as T7a schema + migrations + RLS, then T7b import service + API)
   - Acceptance: Alembic migration for `import_runs`, `templates`, `sections`, `items` and `comments` (ADR-004), with RLS
     enabled on every table. `POST /api/imports` saves the tree, re-reads it inside the transaction, compares it with the
     parsed source, and commits. A mismatch rolls back with `VERIFICATION_FAILED`. Failures store an `import_runs` row
