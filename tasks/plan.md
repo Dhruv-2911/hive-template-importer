@@ -77,5 +77,6 @@ The importer tasks (T4–T6) are pure and don't depend on T1–T3, so they can r
 
 ## Open questions
 1. ~~Git~~: resolved 2026-09-29. Repo initialized on `main`; one commit per task that passes verification. Not pushed.
-2. **GitHub remote:** not decided yet. Needed before submission.
+2. ~~GitHub remote~~: resolved 2026-09-29. Private repo `Dhruv-2911/hive-template-importer`. Hive's reviewers must be
+   added as collaborators before submission (usernames still needed).
 3. **Sample reset** (`python -m app.seed --reset`): not in the spec; decide before T8.
