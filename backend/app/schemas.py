@@ -145,3 +145,19 @@ class TemplateSummary(TemplateFields):
 
 class TemplateTree(TemplateFields):
     sections: list[SectionOut]
+
+
+class NameChange(BaseModel):
+    name: str
+
+
+class CommentChange(BaseModel):
+    name: str | None = None
+
+
+class NamedOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    name: str
+    source_name: str

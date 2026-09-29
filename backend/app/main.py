@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from app.api_errors import install_error_handlers
 from app.config import Settings
 from app.db import make_engine
-from app.routes import health, imports, templates
+from app.routes import edits, health, imports, templates
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -43,6 +43,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health.router, prefix="/api")
     app.include_router(imports.router, prefix="/api")
     app.include_router(templates.router, prefix="/api")
+    app.include_router(edits.router, prefix="/api")
 
     # Mounted last so /api routes win. html=True serves template/index.html at /template/ and 404.html for
     # unknown paths, which is what `output: 'export'` with `trailingSlash: true` produces (ADR-008).
