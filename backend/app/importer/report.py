@@ -173,8 +173,9 @@ def _kept_not_editable(sheet: Sheet) -> tuple[ColumnFill, ...]:
 
 
 def _not_in_export(embedded_videos: int) -> tuple[NotInExport, ...]:
+    comments = "comment" if embedded_videos == 1 else "comments"
     videos = (
-        f"{embedded_videos} comment(s) had an embedded video that the export replaced with an empty "
+        f"{embedded_videos} {comments} had an embedded video that the export replaced with an empty "
         "placeholder. See the notices for which ones."
         if embedded_videos
         else "None detected in this file."

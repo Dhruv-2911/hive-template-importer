@@ -15,8 +15,11 @@ export default defineConfig({
     : {
         // Playwright stops this with a hard kill that `docker run` can't pass on, so clear any leftover
         // container first; e2e/teardown.ts removes it afterwards.
+        // Each run starts from an empty hive_e2e database; the container migrates and seeds it on start.
         command:
           "docker rm -f hive-e2e > /dev/null 2>&1; " +
+          "docker compose -f ../docker-compose.yml exec -T db psql -q -U hive -d hive " +
+          "-c 'DROP DATABASE IF EXISTS hive_e2e WITH (FORCE)' -c 'CREATE DATABASE hive_e2e OWNER hive'; " +
           `exec docker run --rm --name hive-e2e --network hive_default -p ${PORT}:8000 ` +
           "-e DATABASE_URL=postgresql://hive:hive@db:5432/hive_e2e hive-importer",
         url: `http://localhost:${PORT}/api/health`,

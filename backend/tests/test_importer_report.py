@@ -91,4 +91,4 @@ def test_what_spectora_does_not_export_is_listed_separately(commercial):
         "section_text",
         "embedded_videos",
     ]
-    assert "1" in missing["embedded_videos"].detail
+    assert missing["embedded_videos"].detail.startswith("1 comment had an embedded video")
