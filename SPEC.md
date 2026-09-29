@@ -84,6 +84,12 @@ in an "Unclassified" group, and a blank section or item name is kept under "(bla
 
 **US7: Seeded demo.** The live URL opens on the Commercial export, already imported. Seeding runs that file through the
 **same import pipeline** (not a SQL dump), is idempotent, and marks the template `is_sample`.
+- `python -m app.seed` (run on every container start) imports the sample only if no sample exists, so restarts never
+  touch edits.
+- `python -m app.seed --reset` is for the operator only, never an API endpoint. It deletes the sample template (its
+  sections, items and comments cascade), then imports the committed file again as a fresh sample. Copies made from
+  the sample, other imported templates and every import run are kept. Copies' `copied_from_id` becomes null.
+  It prints what it deleted and what it created.
 
 ## Tech Stack
 
@@ -94,15 +100,16 @@ in an "Unclassified" group, and a blank section or item name is kept under "(bla
 - **Database:** Postgres 17 (Supabase runs 17.6). Local: docker compose. Production: **Supabase via the session pooler** (ADR-002). RLS is
   enabled with no policies.
 - **Deploy:** one multi-stage Docker image as a **Render** web service (ADR-001), kept awake by an external uptime
-  monitor that requests `/api/health`. Blueprint in `render.yaml`.
+  monitor that requests `/api/health` every 10 minutes (Render sleeps after about 15 idle). Blueprint in `render.yaml`.
 - Versions are pinned in `uv.lock` and `package-lock.json` at scaffold time.
 
 ## Data model (ADR-004)
 
 ```
-import_runs  id, filename, file_sha256, file_bytes (bytea), status (succeeded|failed),
-             error_code, error_message, report (jsonb), template_id?, created_at
-templates    id, name, is_sample, import_run_id?, copied_from_id?, created_at, updated_at
+import_runs  id, filename, file_sha256, file_bytes (bytea)?, status (succeeded|failed),
+             error_code, error_message, report (jsonb)?, created_at
+templates    id, name, source_name, is_sample, import_run_id? → import_runs, copied_from_id? → templates,
+             created_at, updated_at
 sections     id, template_id → templates (cascade), position, name, source_name
 items        id, section_id → sections (cascade), position, name, source_name
 comments     id, item_id → items (cascade), position, source_row,
@@ -114,7 +121,11 @@ comments     id, item_id → items (cascade), position, source_row,
 
 - `position` comes from row order. The Order column is kept in `source_columns` and never re-sorted.
 - `source_*` fields are written once at import and never changed. They power **Edited**, **Show original** and the round-trip check.
-- A failed import still writes an `import_runs` row with `status=failed`, but no template rows.
+- A failed import still writes an `import_runs` row with `status=failed`, but no template rows. `file_bytes` is null
+  only when the upload was rejected as too large.
+- The link runs one way (template → its import run) to avoid a circular foreign key. A copy keeps its original's
+  `import_run_id`, so its report stays reachable. An import run's own template is the one with that
+  `import_run_id` and no `copied_from_id`. Deleting a template or run sets these references to null.
 
 ## API (FastAPI, JSON)
 
@@ -145,6 +156,7 @@ cd backend
 uv sync
 uv run alembic upgrade head
 uv run python -m app.seed                                # imports the Commercial export if no sample exists
+DATABASE_URL=... uv run python -m app.seed --reset      # operator only: replace the sample with a fresh import
 uv run uvicorn app.main:create_app --factory --reload --port 8000
 uv run pytest -q
 uv run pytest --cov=app/importer --cov-fail-under=90

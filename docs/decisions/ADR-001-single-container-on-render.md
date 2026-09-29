@@ -22,7 +22,8 @@ The container start command is:
 alembic upgrade head && python -m app.seed && uvicorn app.main:create_app --factory --host 0.0.0.0 --port $PORT
 ```
 
-An external uptime monitor requests `/api/health` every 5 minutes so the free instance doesn't go to sleep.
+An external uptime monitor requests `/api/health` every 10 minutes, inside Render's roughly 15-minute idle limit, so the
+free instance doesn't go to sleep.
 
 ## Alternatives Considered
 

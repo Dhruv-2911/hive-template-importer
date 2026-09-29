@@ -25,7 +25,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 - [x] **T3: Deploy the skeleton to Render + Supabase** (S)
   - Acceptance: a Supabase project exists; the session-pooler `DATABASE_URL` is set in Render; `render.yaml` (Docker
     runtime, health check `/api/health`) is committed; the public Render URL returns ok from `/api/health` (proving the
-    DB connection); the external uptime monitor is set to 5-minute pings.
+    DB connection); the external uptime monitor pings every 10 minutes (set up by the owner, 2026-09-29).
   - Verify: `curl -sf https://<app>.onrender.com/api/health`; the Render dashboard shows the deploy as live.
   - Deps: T2 · **Needs you:** Supabase and Render accounts, and the secret values
   - Files: `render.yaml`, `README.md` (deploy section stub)
@@ -67,7 +67,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 
 ## Phase 2: Baseline vertical slices
 
-- [ ] **T7: Schema, import API and in-transaction verification** (M)
+- [ ] **T7: Schema, import API and in-transaction verification** (M; done as T7a schema + migrations + RLS, then T7b import service + API)
   - Acceptance: Alembic migration for `import_runs`, `templates`, `sections`, `items` and `comments` (ADR-004), with RLS
     enabled on every table. `POST /api/imports` saves the tree, re-reads it inside the transaction, compares it with the
     parsed source, and commits. A mismatch rolls back with `VERIFICATION_FAILED`. Failures store an `import_runs` row
@@ -80,7 +80,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 
 - [ ] **T8: Seed and template read API** (S–M)
   - Acceptance: `python -m app.seed` imports the Commercial export through `services/imports.py`, marks it `is_sample`,
-    and is idempotent (a second run adds nothing). `GET /api/templates` returns counts; `GET /api/templates/{id}` returns
+    and is idempotent (a second run adds nothing). `--reset` replaces only the sample; copies and other templates survive. `GET /api/templates` returns counts; `GET /api/templates/{id}` returns
     the full tree in position order. Pydantic response schemas define the contract.
   - Verify: `uv run python -m app.seed && uv run python -m app.seed && uv run pytest tests/test_api_templates.py -q` (exactly one sample).
   - Deps: T7

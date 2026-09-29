@@ -17,6 +17,6 @@ and lets an inspector rename, edit and duplicate it. Built for the Hive Inspect 
    can't reach it, so `/api/health` returns 503 ([ADR-002](docs/decisions/ADR-002-supabase-postgres-session-pooler.md)).
 2. **Render:** New → Blueprint → this repository (`render.yaml`). Enter `DATABASE_URL` when prompted. Pick the
    region closest to the Supabase project; the live app runs in Singapore against Supabase `ap-south-1` (Mumbai).
-3. **Uptime monitor:** request `/api/health` every 5 minutes. It runs `SELECT 1`, so it keeps both the free Render
+3. **Uptime monitor:** request `/api/health` every 10 minutes (Render's free tier sleeps after about 15 idle). It runs `SELECT 1`, so it keeps both the free Render
    instance and the free Supabase project awake.
 4. Check: `curl https://<app>.onrender.com/api/health` returns `{"status":"ok"}`.
