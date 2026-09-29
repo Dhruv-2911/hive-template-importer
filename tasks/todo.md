@@ -98,8 +98,8 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
     `frontend/components/CommentList.tsx`, `frontend/app/page.tsx`
 
 ### Checkpoint B: after T7–T9
-- [ ] All tests pass, the container builds, and the change is deployed to Render
-- [ ] **The live URL opens on the seeded Commercial template** (the first vertical slice works end to end)
+- [x] All tests pass (102 backend), the container builds, and the change is deployed to Render
+- [x] **The live URL opens on the seeded Commercial template** (4.7 s from India, no console errors; 2026-09-29)
 - [ ] Review with you
 
 - [ ] **T10: Upload and import report UI** (M)
