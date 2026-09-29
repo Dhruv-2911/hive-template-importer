@@ -9,6 +9,10 @@ export type TemplateTree = Schemas["TemplateTree"];
 export type Section = Schemas["SectionOut"];
 export type Item = Schemas["ItemOut"];
 export type Comment = Schemas["CommentOut"];
+export type ImportCreated = Schemas["ImportCreated"];
+export type ImportRun = Schemas["ImportRunOut"];
+export type ImportReport = Schemas["ImportReport"];
+export type Notice = Schemas["Notice"];
 export type Health = { status: "ok" | "unavailable" };
 
 /** The API's error shape: {"error": {"code", "message", "details"}}. The message is written for the inspector. */
@@ -47,4 +51,11 @@ export const api = {
   health: () => request<Health>("/api/health"),
   listTemplates: () => request<TemplateSummary[]>("/api/templates"),
   getTemplate: (id: string) => request<TemplateTree>(`/api/templates/${encodeURIComponent(id)}`),
+  importFile: (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return request<ImportCreated>("/api/imports", { method: "POST", body: form });
+  },
+  getImport: (id: string) => request<ImportRun>(`/api/imports/${encodeURIComponent(id)}`),
+  importFileUrl: (id: string) => `${API_BASE}/api/imports/${encodeURIComponent(id)}/file`,
 };

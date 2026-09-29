@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "gen:api": "cd ../backend && env -u VIRTUAL_ENV uv run python -m app.openapi > ../frontend/lib/openapi.json && cd ../frontend && openapi-typescript lib/openapi.json -o lib/api-types.ts"
+    "gen:api": "cd ../backend && env -u VIRTUAL_ENV uv run python -m app.openapi > ../frontend/lib/openapi.json && cd ../frontend && openapi-typescript lib/openapi.json -o lib/api-types.ts",
+    "e2e": "docker build -q -t hive-importer .. > /dev/null && playwright test"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.0",
