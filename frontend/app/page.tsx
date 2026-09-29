@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-import { getHealth } from "@/lib/api";
+import { api } from "@/lib/api";
 
 export default function Home() {
   const [status, setStatus] = useState("checking…");
 
   useEffect(() => {
-    getHealth()
+    api.health()
       .then((health) => setStatus(health.status))
       .catch(() => setStatus("unreachable"));
   }, []);

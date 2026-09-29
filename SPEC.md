@@ -164,7 +164,7 @@ uv run ruff check . && uv run ruff format --check .
 
 cd frontend
 npm ci
-npm run gen:api                                          # regenerate TS types from http://localhost:8000/openapi.json
+npm run gen:api                                          # regenerate lib/api-types.ts from the FastAPI schema (offline)
 npm run dev                                              # :3000, NEXT_PUBLIC_API_BASE=http://localhost:8000
 npm run lint && npm run typecheck
 npm run build                                            # static export → frontend/out
