@@ -4,13 +4,14 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import sessionmaker
 
 from app.api_errors import install_error_handlers
 from app.config import Settings
 from app.db import make_engine
-from app.routes import health, imports
+from app.routes import health, imports, templates
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -28,6 +29,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.engine = engine
     app.state.sessions = sessionmaker(engine, expire_on_commit=False)
     install_error_handlers(app)
+    # A template tree is ~230 KB of JSON; gzip brings it to a fraction of that over the Singapore link.
+    app.add_middleware(GZipMiddleware, minimum_size=1000)
 
     if settings.cors_origin_list:
         app.add_middleware(
@@ -39,6 +42,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(health.router, prefix="/api")
     app.include_router(imports.router, prefix="/api")
+    app.include_router(templates.router, prefix="/api")
 
     # Mounted last so /api routes win. html=True serves template/index.html at /template/ and 404.html for
     # unknown paths, which is what `output: 'export'` with `trailingSlash: true` produces (ADR-008).

@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ErrorDetail(BaseModel):
@@ -77,3 +77,71 @@ class ImportRunOut(BaseModel):
     template_id: uuid.UUID | None
     report: ImportReport | None  # set when the import succeeded
     error: ErrorDetail | None  # set when it was rejected
+
+
+class CommentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    position: int
+    source_row: int
+    comment_type: str
+    source_type: str
+    name: str
+    source_name: str
+    text_html: str
+    source_text_html: str
+    severity: int | None
+    answer_type: str | None
+    options: list[str]
+    unit_options: list[str]
+    recommendation: str | None
+    default_value: str | None
+    edited_at: datetime | None
+
+
+class ItemOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    position: int
+    name: str
+    source_name: str
+    comments: list[CommentOut]
+
+
+class SectionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    position: int
+    name: str
+    source_name: str
+    items: list[ItemOut]
+
+
+class TemplateFields(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    name: str
+    source_name: str
+    is_sample: bool
+    import_run_id: uuid.UUID | None
+    copied_from_id: uuid.UUID | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class TemplateCounts(BaseModel):
+    sections: int
+    items: int
+    comments: int
+
+
+class TemplateSummary(TemplateFields):
+    counts: TemplateCounts
+
+
+class TemplateTree(TemplateFields):
+    sections: list[SectionOut]

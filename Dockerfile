@@ -24,14 +24,17 @@ RUN uv sync --frozen --no-dev --no-install-project
 
 COPY backend/ ./
 COPY --from=frontend /frontend/out /app/frontend/out
+# The committed export the live app opens on (SPEC.md US7).
+COPY ["InterNACHI Commercial Template-2026-09-28.xls", "/app/samples/"]
 
 # Render terminates HTTPS at its proxy. Trusting X-Forwarded-Proto keeps redirects (e.g. /templates -> /templates/)
 # on https instead of bouncing users to http.
 ENV PATH="/app/.venv/bin:$PATH" \
     FRONTEND_DIR=/app/frontend/out \
+    SAMPLE_EXPORT="/app/samples/InterNACHI Commercial Template-2026-09-28.xls" \
     FORWARDED_ALLOW_IPS="*" \
     PORT=8000
 EXPOSE 8000
-# Migrations run on every start and are safe to re-run; a failed migration stops the container, so Render keeps
-# the previous deploy live (ADR-001).
-CMD ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:create_app --factory --host 0.0.0.0 --port ${PORT}"]
+# Every start: migrate, then seed the sample only if it's missing (SPEC.md US7). Both are safe to re-run. If either
+# fails the container stops, so Render keeps the previous deploy live (ADR-001).
+CMD ["sh", "-c", "alembic upgrade head && python -m app.seed && exec uvicorn app.main:create_app --factory --host 0.0.0.0 --port ${PORT}"]

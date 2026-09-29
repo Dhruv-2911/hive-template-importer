@@ -78,7 +78,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Files: `backend/app/models.py`, `backend/migrations/versions/0001_initial.py`, `backend/app/services/imports.py`,
     `backend/app/routes/imports.py`, `backend/tests/test_api_imports.py`
 
-- [ ] **T8: Seed and template read API** (S–M)
+- [x] **T8: Seed and template read API** (S–M)
   - Acceptance: `python -m app.seed` imports the Commercial export through `services/imports.py`, marks it `is_sample`,
     and is idempotent (a second run adds nothing). `--reset` replaces only the sample; copies and other templates survive. `GET /api/templates` returns counts; `GET /api/templates/{id}` returns
     the full tree in position order. Pydantic response schemas define the contract.

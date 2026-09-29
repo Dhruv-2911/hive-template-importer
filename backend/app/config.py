@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     cors_origins: str = ""
     # The Next.js static export (ADR-008). Relative to backend/ in development; set by the Docker image.
     frontend_dir: str = "../frontend/out"
+    # The committed export the live app opens on (SPEC.md US7). Relative to backend/ in development.
+    sample_export: str = "../InterNACHI Commercial Template-2026-09-28.xls"
 
     @property
     def max_upload_bytes(self) -> int:
