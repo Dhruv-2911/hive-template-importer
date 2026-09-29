@@ -32,4 +32,6 @@ ENV PATH="/app/.venv/bin:$PATH" \
     FORWARDED_ALLOW_IPS="*" \
     PORT=8000
 EXPOSE 8000
-CMD ["sh", "-c", "exec uvicorn app.main:create_app --factory --host 0.0.0.0 --port ${PORT}"]
+# Migrations run on every start and are safe to re-run; a failed migration stops the container, so Render keeps
+# the previous deploy live (ADR-001).
+CMD ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:create_app --factory --host 0.0.0.0 --port ${PORT}"]
