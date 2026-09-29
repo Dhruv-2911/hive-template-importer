@@ -1,0 +1,12 @@
+.git
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.env
+**/.env.*
+frontend/node_modules
+frontend/.next
+frontend/out
+backend/tests
+Hive_Inspect_Template_Importer_Assignment.pdf

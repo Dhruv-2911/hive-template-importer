@@ -13,7 +13,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Files: `backend/app/main.py`, `backend/app/config.py`, `backend/app/db.py`, `docker-compose.yml`,
     `backend/tests/test_health.py` (plus `pyproject.toml` from `uv init` and a one-line `.env.example`)
 
-- [ ] **T2: Frontend skeleton, served by FastAPI from one Docker image** (M)
+- [x] **T2: Frontend skeleton, served by FastAPI from one Docker image** (M)
   - Acceptance: Next.js with `output: 'export'` and `trailingSlash: true`; `/` shows the health status fetched from
     `/api/health`; the multi-stage `Dockerfile` builds the frontend then the Python image; FastAPI mounts `frontend/out`
     at `/` after the `/api` routers; `/templates/` and unknown paths (404.html) resolve **inside the container**.

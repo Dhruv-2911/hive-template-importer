@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.config import Settings
 from app.db import make_engine
@@ -22,4 +25,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
 
     app.include_router(health.router, prefix="/api")
+
+    # Mounted last so /api routes win. html=True serves template/index.html at /template/ and 404.html for
+    # unknown paths, which is what `output: 'export'` with `trailingSlash: true` produces (ADR-008).
+    if Path(settings.frontend_dir).is_dir():
+        app.mount("/", StaticFiles(directory=settings.frontend_dir, html=True), name="frontend")
     return app
