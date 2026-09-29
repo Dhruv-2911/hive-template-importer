@@ -86,7 +86,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Deps: T7
   - Files: `backend/app/seed.py`, `backend/app/schemas.py`, `backend/app/routes/templates.py`, `backend/tests/test_api_templates.py`
 
-- [ ] **T9: Browse UI** (M)
+- [x] **T9: Browse UI** (M)
   - Acceptance: `/` redirects to `/template/?id=<sample>`. A tree of sections → items on the left; the selected item's
     comments grouped Information / Limitations / Defects on the right; HTML rendered with DOMPurify (shared allowlist,
     links open in a new tab with `rel="noopener noreferrer"`); read-only severity, options, recommendation, answer type

@@ -15,3 +15,22 @@ body {
   color: var(--foreground);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
+
+/* Imported Spectora comment HTML (sanitized in lib/sanitize.ts). Tailwind's reset removes these defaults. */
+.comment-html p + p,
+.comment-html p + ul,
+.comment-html ul + p {
+  margin-top: 0.5rem;
+}
+.comment-html a {
+  color: var(--color-teal-700);
+  text-decoration: underline;
+}
+.comment-html ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.comment-html ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
