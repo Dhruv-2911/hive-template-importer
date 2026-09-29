@@ -134,7 +134,8 @@ def _header_keys(header_row: list[object], width: int) -> list[str]:
     return keys
 
 
-def _base_name(header: str) -> str:
+def base_name(header: str) -> str:
+    """The header without its parenthetical note, lowercased: "Order (w/i item)" -> "order"."""
     return re.sub(r"\s*\(.*$", "", header).strip().lower()
 
 
@@ -142,7 +143,7 @@ def _match_columns(headers: list[str]) -> dict[str, str]:
     wanted = {name.lower(): field for field, name in {**REQUIRED_COLUMNS, **OPTIONAL_COLUMNS}.items()}
     column_for: dict[str, str] = {}
     for header in headers:
-        field = wanted.get(_base_name(header))
+        field = wanted.get(base_name(header))
         if field and field not in column_for:
             column_for[field] = header
     return column_for

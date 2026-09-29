@@ -84,3 +84,81 @@ def zip_with_workbook_marker_but_broken_contents() -> bytes:
     with zipfile.ZipFile(buffer, "w") as archive:
         archive.writestr("xl/workbook.xml", "this is not xml")
     return buffer.getvalue()
+
+
+def hand_written_xlsx(rows: list[list[str]], cell_type: str = "str", extra_sheets: int = 0) -> bytes:
+    """A minimal xlsx written by hand, without a shared-strings table.
+
+    cell_type "str" mimics Spectora's export (text as formula-string results); "inlineStr" mimics files
+    written by scripts. Both put the text in the sheet itself, which a reader that only knows shared strings
+    misses.
+    """
+
+    def cell(ref: str, value: str) -> str:
+        escaped = value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        if cell_type == "inlineStr":
+            return f'<c r="{ref}" t="inlineStr"><is><t xml:space="preserve">{escaped}</t></is></c>'
+        return f'<c r="{ref}" t="str"><v>{escaped}</v></c>'
+
+    def sheet_xml(sheet_rows: list[list[str]]) -> str:
+        body = "".join(
+            f'<row r="{r}">'
+            + "".join(cell(f"{chr(65 + c)}{r}", v) for c, v in enumerate(values) if v != "")
+            + "</row>"
+            for r, values in enumerate(sheet_rows, start=1)
+        )
+        return (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            f"<sheetData>{body}</sheetData></worksheet>"
+        )
+
+    sheet_count = 1 + extra_sheets
+    main = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+    sheets = "".join(
+        f'<sheet name="Sheet{i}" sheetId="{i}" r:id="rId{i}"/>' for i in range(1, sheet_count + 1)
+    )
+    rels = "".join(
+        f'<Relationship Id="rId{i}" Type="{rel}/worksheet" Target="worksheets/sheet{i}.xml"/>'
+        for i in range(1, sheet_count + 1)
+    )
+    overrides = "".join(
+        f'<Override PartName="/xl/worksheets/sheet{i}.xml" '
+        'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+        for i in range(1, sheet_count + 1)
+    )
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr(
+            "[Content_Types].xml",
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+            '<Default Extension="rels" '
+            'ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+            '<Default Extension="xml" ContentType="application/xml"/>'
+            '<Override PartName="/xl/workbook.xml" '
+            'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+            f"{overrides}</Types>",
+        )
+        archive.writestr(
+            "_rels/.rels",
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            f'<Relationship Id="rId1" Type="{rel}/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+        )
+        archive.writestr(
+            "xl/workbook.xml",
+            f'<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="{main}" xmlns:r="{rel}">'
+            f"<sheets>{sheets}</sheets></workbook>",
+        )
+        archive.writestr(
+            "xl/_rels/workbook.xml.rels",
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            f'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">{rels}'
+            "</Relationships>",
+        )
+        archive.writestr("xl/worksheets/sheet1.xml", sheet_xml(rows))
+        for i in range(2, sheet_count + 1):
+            archive.writestr(f"xl/worksheets/sheet{i}.xml", sheet_xml([["Something else"]]))
+    return buffer.getvalue()

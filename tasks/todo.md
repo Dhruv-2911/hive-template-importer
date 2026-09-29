@@ -49,7 +49,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Deps: T4
   - Files: `backend/app/importer/parse.py`, `backend/app/importer/types.py`, `backend/tests/test_importer_golden.py`
 
-- [ ] **T6: Importer: report notices and generality** (M)
+- [x] **T6: Importer: report notices and generality** (M)
   - Acceptance: the report has reconciliation, notices (`NO_TEXT_IN_SOURCE`, `EMBED_STRIPPED`, `DUPLICATE_NAME_IN_ITEM`,
     `UNKNOWN_TYPE`, `BLANK_SECTION`, `BLANK_ITEM`, `UNMODELLED_VALUE`) with row numbers, kept-but-not-editable columns
     with fill counts, and a not-in-export list. Golden rows match `docs/spectora-export-format.md` (e.g. Commercial
