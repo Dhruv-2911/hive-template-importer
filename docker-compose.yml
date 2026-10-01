@@ -1,3 +1,7 @@
+# A fixed project name keeps the network called hive_default whatever folder the repo is cloned into
+# (README and the e2e config use it).
+name: hive
+
 services:
   db:
     image: postgres:17
