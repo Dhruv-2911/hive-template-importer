@@ -148,7 +148,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 
 ## Phase 3: Prove it and ship it
 
-- [ ] **T14: End-to-end test against the container** (S)
+- [x] **T14: End-to-end test against the container** (S)
   - Acceptance: Playwright runs the demo path (upload → rename → reload → duplicate → edit copy → original unchanged) and
     the "untouched comment sends no request" check, against `docker run`, not `next dev`.
   - Verify: `npx playwright test` is green against `localhost:8000`.
