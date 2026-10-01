@@ -155,14 +155,14 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Deps: T10–T13
   - Files: `frontend/playwright.config.ts`, `frontend/e2e/demo-path.spec.ts`
 
-- [ ] **T15: Live verification** (S, mostly manual)
+- [x] **T15: Live verification** (S, mostly manual)
   - Acceptance: every SPEC.md success criterion is checked on the Render URL. Edits survive a **service restart** from the
     Render dashboard. The uptime monitor shows it up. Results recorded in `NOTES.md → How I checked`.
   - Verify: the checklist in NOTES.md, with each criterion marked and the evidence noted.
   - Deps: T14
   - Files: `NOTES.md`
 
-- [ ] **T16: README, NOTES and prompts** (M)
+- [x] **T16: README, NOTES and prompts** (M)
   - Acceptance: README has setup, DB init (`alembic upgrade head`, seed), env vars, and **"Hosted on Render, not Vercel,
     because…" (ADR-001)**. NOTES.md covers what was cut and why, supported input and limits (missing from the export vs
     not supported by us), how it was checked, time spent, and credits (OpenInspection as a reference only, libraries).
@@ -171,7 +171,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Deps: T15
   - Files: `README.md`, `NOTES.md`, `prompts/README.md`, `.env.example`
 
-- [ ] **T17: Walkthrough outline** (S)
+- [x] **T17: Walkthrough outline** (S)
   - Acceptance: `docs/walkthrough-outline.md` covers the assignment's 7 parts with timings (8–10 minutes), exactly what to click, and
     which file and rows to show (row 318 embed, rows 263/264, a failure case with the PDF, the round-trip "346 of 346").
   - Verify: a dry run by you fits in 10 minutes.
@@ -179,8 +179,8 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Files: `docs/walkthrough-outline.md`
 
 ### Checkpoint D: complete
-- [ ] SPEC.md success criteria 1–8 all met
-- [ ] Repo, live URL, video and NOTES.md ready to send
+- [x] SPEC.md success criteria 1–8 all met (checked live 2026-10-01; evidence in NOTES.md → How I checked)
+- [ ] Repo, live URL, video and NOTES.md ready to send (remaining: the video, time spent in NOTES.md, reviewer access to the private repo, removing test templates from production)
 
 ## Human tasks (alongside the build)
 
