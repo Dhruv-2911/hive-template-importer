@@ -1,17 +1,15 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import { ApiError, api, type Notice, type TemplateTree } from "@/lib/api";
-import { useTemplateEdits, type TemplateEdits } from "@/lib/useTemplateEdits";
-
-import { InlineName } from "./InlineName";
+import { useTemplateEdits } from "@/lib/useTemplateEdits";
 
 import { ItemComments } from "./ItemComments";
 import { SectionTree } from "./SectionTree";
+import { TemplateHeader } from "./TemplateHeader";
 import { LinkButton, PageMessage, RetryButton, TemplateSkeleton } from "./States";
 
 export function TemplateScreen() {
@@ -79,49 +77,6 @@ export function TemplateScreen() {
         </main>
       </div>
     </div>
-  );
-}
-
-function TemplateHeader({ template, edits }: { template: TemplateTree; edits: TemplateEdits }) {
-  const items = template.sections.flatMap((s) => s.items);
-  const comments = items.reduce((total, item) => total + item.comments.length, 0);
-  return (
-    <header className="flex items-center justify-between gap-6 border-b border-zinc-200 bg-white px-6 py-4">
-      <div className="min-w-0">
-        <Link href="/templates/" className="text-sm text-teal-700 hover:underline">
-          Templates
-        </Link>
-        <div className="flex items-center gap-2">
-          <InlineName
-            kind="template"
-            value={template.name}
-            source={template.source_name}
-            onSave={edits.renameTemplate}
-            as="h1"
-            className="text-lg font-semibold text-zinc-900"
-          />
-          {template.is_sample && <Badge>Sample</Badge>}
-          {template.copied_from_id && <Badge>Copy</Badge>}
-        </div>
-        <p className="text-sm text-zinc-500">
-          Imported from Spectora · {template.sections.length} sections · {items.length} items · {comments} comments
-        </p>
-      </div>
-      {template.import_run_id && (
-        <Link
-          href={`/import/?id=${template.import_run_id}`}
-          className="shrink-0 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
-        >
-          Import report
-        </Link>
-      )}
-    </header>
-  );
-}
-
-function Badge({ children }: { children: string }) {
-  return (
-    <span className="rounded border border-zinc-300 px-1.5 py-px text-xs font-medium text-zinc-600">{children}</span>
   );
 }
 

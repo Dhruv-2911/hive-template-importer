@@ -15,6 +15,7 @@ export type ImportReport = Schemas["ImportReport"];
 export type Notice = Schemas["Notice"];
 export type Named = Schemas["NamedOut"];
 export type CommentChange = Schemas["CommentChange"];
+export type DuplicateCreated = Schemas["DuplicateCreated"];
 export type Health = { status: "ok" | "unavailable" };
 
 /** The API's error shape: {"error": {"code", "message", "details"}}. The message is written for the inspector. */
@@ -64,6 +65,7 @@ export const api = {
   },
   getImport: (id: string) => request<ImportRun>(`/api/imports/${encodeURIComponent(id)}`),
   importFileUrl: (id: string) => `${API_BASE}/api/imports/${encodeURIComponent(id)}/file`,
+  duplicateTemplate: (id: string) => request<DuplicateCreated>(`/api/templates/${id}/duplicate`, { method: "POST" }),
   renameTemplate: (id: string, name: string) => request<Named>(`/api/templates/${id}`, patch({ name })),
   renameSection: (id: string, name: string) => request<Named>(`/api/sections/${id}`, patch({ name })),
   renameItem: (id: string, name: string) => request<Named>(`/api/items/${id}`, patch({ name })),

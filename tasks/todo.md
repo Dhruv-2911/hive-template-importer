@@ -131,7 +131,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Files: `frontend/components/CommentEditor.tsx`, `frontend/lib/sanitize.ts`, `backend/app/sanitize.py`,
     `backend/tests/test_sanitize.py`, `frontend/lib/sanitize.test.ts`
 
-- [ ] **T13: Duplicate slice** (S–M)
+- [x] **T13: Duplicate slice** (S–M)
   - Acceptance: `POST /api/templates/{id}/duplicate` deep-copies everything, source data included, in one transaction →
     `"<name> (copy)"` with `copied_from_id`. A Duplicate button opens the copy. Edits to the copy leave the original
     unchanged, and edits to the original leave the copy unchanged.

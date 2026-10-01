@@ -18,11 +18,14 @@ def duplicate_template(session: Session, template_id: uuid.UUID) -> uuid.UUID | 
         return None
 
     copy_id = uuid.uuid4()
+    copy_name = f"{original.name} (copy)"
     session.add(
         Template(
             id=copy_id,
-            name=f"{original.name} (copy)",
-            source_name=original.source_name,
+            name=copy_name,
+            # A template's name doesn't come from the export, so the copy's reference name is the one it was
+            # created with: it's only marked as edited once the inspector renames it.
+            source_name=copy_name,
             is_sample=False,
             import_run_id=original.import_run_id,  # the copy still reaches the import report
             copied_from_id=original.id,

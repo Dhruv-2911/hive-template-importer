@@ -51,6 +51,8 @@ def test_the_copy_has_everything_under_new_ids(client, original):
     copy = duplicate(client, original["id"])
 
     assert copy["name"] == f"{original['name']} (copy)"
+    # The "(copy)" suffix isn't the inspector's edit, so a fresh copy's name isn't marked as edited.
+    assert copy["source_name"] == copy["name"]
     assert copy["copied_from_id"] == original["id"]
     assert copy["import_run_id"] == original["import_run_id"]  # so the copy still reaches its import report
     assert copy["is_sample"] is False

@@ -70,6 +70,9 @@ it can **trust is complete**. The user works at a desk, is not technical, and ha
 **US5: Duplicate.** Copy a template and edit the copy on its own.
 - **Duplicate** creates `"<name> (copy)"`: a deep copy of sections, items, comments and stored source data, done in one transaction.
 - Editing the copy leaves the original unchanged, and editing the original leaves the copy unchanged.
+- The copy keeps every imported `source_*` value of its sections, items and comments, and the edits made before it was
+  copied. Its *template* name is the exception: a template's name doesn't come from the export, so the copy's reference
+  name is the one it was created with, and it's only marked Edited once the inspector renames it.
 
 **US6: Fail honestly.** Bad input gets a specific, actionable message, and nothing is written.
 
