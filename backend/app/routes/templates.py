@@ -6,7 +6,15 @@ from sqlalchemy.orm import defer, selectinload
 
 from app.api_errors import not_found
 from app.models import Comment, Item, Section, Template
-from app.schemas import ErrorBody, TemplateCounts, TemplateFields, TemplateSummary, TemplateTree
+from app.schemas import (
+    DuplicateCreated,
+    ErrorBody,
+    TemplateCounts,
+    TemplateFields,
+    TemplateSummary,
+    TemplateTree,
+)
+from app.services.duplicate import duplicate_template
 
 router = APIRouter()
 
@@ -58,3 +66,17 @@ def get_template(request: Request, template_id: uuid.UUID) -> TemplateTree:
         if template is None:
             raise not_found("template")
         return TemplateTree.model_validate(template)
+
+
+@router.post(
+    "/templates/{template_id}/duplicate",
+    status_code=201,
+    response_model=DuplicateCreated,
+    responses={404: {"model": ErrorBody}},
+)
+def duplicate(request: Request, template_id: uuid.UUID) -> DuplicateCreated:
+    with request.app.state.sessions.begin() as session:
+        copy_id = duplicate_template(session, template_id)
+        if copy_id is None:
+            raise not_found("template")
+    return DuplicateCreated(template_id=copy_id)

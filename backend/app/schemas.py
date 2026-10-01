@@ -147,6 +147,10 @@ class TemplateTree(TemplateFields):
     sections: list[SectionOut]
 
 
+class DuplicateCreated(BaseModel):
+    template_id: uuid.UUID
+
+
 class NameChange(BaseModel):
     name: str
 
