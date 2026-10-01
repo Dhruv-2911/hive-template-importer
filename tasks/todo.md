@@ -142,8 +142,8 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
     `frontend/components/TemplateHeader.tsx`
 
 ### Checkpoint C: after T10–T13 (baseline complete)
-- [ ] All tests pass; deployed to Render
-- [ ] On the live URL: import Residential → rename a section → reload → duplicate → edit the copy → the original is unchanged
+- [x] All tests pass (137 backend, 28 e2e); deployed to Render
+- [x] On the live URL: import Residential → rename a section → reload → duplicate → edit the copy → the original is unchanged (2026-10-01; import 4.4 s, duplicate 2.6 s after the round-trip fix)
 - [ ] Review with you before Phase 3
 
 ## Phase 3: Prove it and ship it
