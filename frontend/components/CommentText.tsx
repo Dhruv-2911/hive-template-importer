@@ -8,6 +8,7 @@ import { sanitizeCommentHtml } from "@/lib/sanitize";
 
 import { HtmlEditor } from "./editor/HtmlEditor";
 import { RichEditor } from "./editor/RichEditor";
+import { ui } from "./styles";
 
 type Props = { comment: Comment; onSave: (html: string) => Promise<unknown> };
 
@@ -47,32 +48,32 @@ export function CommentText({ comment, onSave }: Props) {
     <>
       {hasText ? (
         <div
-          className="comment-html mt-2 text-sm leading-6 text-zinc-800"
+          className="comment-html mt-3 text-sm leading-6 text-ink"
           dangerouslySetInnerHTML={{ __html: sanitizeCommentHtml(comment.text_html) }}
         />
       ) : (
         comment.options.length === 0 && (
-          <p className="mt-2 text-sm italic text-zinc-500">
+          <p className="mt-3 text-sm italic text-meta">
             {edited ? "No text." : "No text in the Spectora export."}
           </p>
         )
       )}
-      <div className="mt-1 flex flex-wrap items-baseline gap-x-3 text-xs">
+      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
         <button
           type="button"
           onClick={() => setMode(fitsRichEditor(comment.text_html) ? "rich" : "html")}
-          className="text-zinc-500 underline-offset-2 hover:text-teal-700 hover:underline"
+          className={ui.smallButton}
         >
           {hasText ? "Edit text" : "Add text"}
         </button>
         {edited && (
           <>
-            <span className="rounded border border-teal-200 bg-teal-50 px-1.5 font-medium text-teal-800">Text edited</span>
+            <span className={`${ui.badge} text-accent`}>Text edited</span>
             <button
               type="button"
               aria-expanded={showOriginal}
               onClick={() => setShowOriginal((shown) => !shown)}
-              className="text-zinc-500 underline-offset-2 hover:text-teal-700 hover:underline"
+              className={ui.quiet}
             >
               {showOriginal ? "Hide original text" : "Show original text"}
             </button>
@@ -80,15 +81,15 @@ export function CommentText({ comment, onSave }: Props) {
         )}
       </div>
       {edited && showOriginal && (
-        <div className="mt-2 rounded border border-zinc-200 bg-zinc-50 px-3 py-2">
-          <p className="text-xs font-medium text-zinc-500">Imported text</p>
+        <div className={`mt-3 px-4 py-3 ${ui.well}`}>
+          <p className="text-xs font-bold uppercase tracking-wider text-meta">Imported text</p>
           {comment.source_text_html.trim() ? (
             <div
-              className="comment-html text-sm leading-6 text-zinc-700"
+              className="comment-html mt-1 text-sm leading-6 text-muted"
               dangerouslySetInnerHTML={{ __html: sanitizeCommentHtml(comment.source_text_html) }}
             />
           ) : (
-            <p className="text-sm italic text-zinc-500">No text in the Spectora export.</p>
+            <p className="mt-1 text-sm italic text-meta">No text in the Spectora export.</p>
           )}
         </div>
       )}

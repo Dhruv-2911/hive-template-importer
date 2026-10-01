@@ -3,6 +3,8 @@ import Link from "next/link";
 import type { Notice, TemplateTree } from "@/lib/api";
 import { groupNotices, noticeKind } from "@/lib/notices";
 
+import { ui } from "../styles";
+
 type Props = { notices: Notice[]; template: TemplateTree | undefined };
 
 /** Row-level notices, grouped by kind. Each row links to its comment in the template. */
@@ -10,31 +12,31 @@ export function ReportNotices({ notices, template }: Props) {
   const where = locations(template);
   return (
     <section aria-labelledby="notices-heading">
-      <h2 id="notices-heading" className="mb-2 font-semibold text-zinc-900">
-        Needs a look <span className="font-normal text-zinc-500">({notices.length})</span>
+      <h2 id="notices-heading" className={`mb-4 ${ui.sectionHeading}`}>
+        Needs a look <span className="font-semibold text-meta">({notices.length})</span>
       </h2>
       {notices.length === 0 ? (
-        <p className="text-sm text-zinc-600">Nothing. Every row came in as it was.</p>
+        <p className={`px-5 py-4 text-sm text-muted ${ui.well}`}>Nothing. Every row came in as it was.</p>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {groupNotices(notices).map(({ code, notices: group }) => {
             // When every row says the same thing, say it once in the header instead of on each row.
             const shared = group.every((n) => n.message === group[0].message) ? group[0].message : undefined;
             return (
-            <div key={code} className="rounded-md border border-zinc-200 bg-white">
-              <div className="border-b border-zinc-200 px-4 py-2">
-                <h3 className="text-sm font-semibold text-zinc-900">
-                  {noticeKind(code).title} <span className="font-normal text-zinc-500">({group.length})</span>
+            <div key={code} className={ui.card}>
+              <div className="px-6 pb-3 pt-5">
+                <h3 className="font-bold text-ink">
+                  {noticeKind(code).title} <span className="font-semibold text-meta">({group.length})</span>
                 </h3>
-                <p className="text-sm text-zinc-600">{shared ?? noticeKind(code).explanation}</p>
+                <p className="mt-1 text-sm leading-6 text-muted">{shared ?? noticeKind(code).explanation}</p>
               </div>
-              <ul className="divide-y divide-zinc-100 text-sm">
+              <ul className="mx-3 mb-3 divide-y divide-line rounded-control px-3 text-sm neu-pressed-sm">
                 {group.map((notice) => (
-                  <li key={`${code}-${notice.row}`} className="px-4 py-2">
+                  <li key={`${code}-${notice.row}`} className="px-1 py-2.5">
                     {template ? (
                       <Link
                         href={`/template/?id=${template.id}&row=${notice.row}`}
-                        className="font-medium text-teal-700 hover:underline"
+                        className={ui.link}
                       >
                         Row {notice.row}
                         {where.get(notice.row) && <span className="font-normal"> · {where.get(notice.row)}</span>}
@@ -42,7 +44,7 @@ export function ReportNotices({ notices, template }: Props) {
                     ) : (
                       <span className="font-medium">Row {notice.row}</span>
                     )}
-                    {!shared && <p className="text-zinc-600">{notice.message}</p>}
+                    {!shared && <p className="mt-0.5 text-muted">{notice.message}</p>}
                   </li>
                 ))}
               </ul>

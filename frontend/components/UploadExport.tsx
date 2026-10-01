@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 
 import { ApiError, api } from "@/lib/api";
 
+import { ui } from "./styles";
+
 /** Upload a Spectora export. On success, open its import report; on refusal, say why and what to do. */
 export function UploadExport() {
   const router = useRouter();
@@ -20,16 +22,16 @@ export function UploadExport() {
   const missing = (error?.details.missing_headers as string[] | undefined) ?? [];
 
   return (
-    <section aria-labelledby="upload-heading" className="rounded-md border border-zinc-200 bg-white p-5">
-      <h2 id="upload-heading" className="font-semibold text-zinc-900">
+    <section aria-labelledby="upload-heading" className={`p-6 ${ui.card}`}>
+      <h2 id="upload-heading" className={ui.sectionHeading}>
         Import from Spectora
       </h2>
-      <p className="mt-1 text-sm text-zinc-600">
+      <p className="mt-1 max-w-3xl text-sm leading-6 text-muted">
         In Spectora, open the template and choose <strong>Export to spreadsheet → Export HTML Text</strong>. Then
         choose the file it downloads. Nothing is saved unless every comment checks out.
       </p>
-      <div className="mt-4 flex items-center gap-3">
-        <label className="cursor-pointer rounded-md bg-teal-700 px-3 py-1.5 text-sm font-medium text-white focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-teal-700 hover:bg-teal-800">
+      <div className="mt-5 flex items-center gap-4">
+        <label className={`${ui.primary} ${ui.focusWithin} has-disabled:cursor-wait has-disabled:opacity-60`}>
           Choose export file…
           <input
             type="file"
@@ -45,14 +47,15 @@ export function UploadExport() {
           />
         </label>
         {upload.isPending && (
-          <p role="status" className="text-sm text-zinc-600">
+          <p role="status" className="flex items-center gap-2 text-sm text-muted">
+            <span aria-hidden className="size-2 animate-pulse rounded-full bg-accent" />
             Importing and checking every comment…
           </p>
         )}
       </div>
       {upload.isError && (
-        <div role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900">
-          <p className="font-medium">This file wasn&apos;t imported.</p>
+        <div role="alert" className={`mt-5 px-5 py-4 text-sm text-ink ${ui.well}`}>
+          <p className="font-bold text-danger">This file wasn&apos;t imported.</p>
           <p className="mt-1">{upload.error.message}</p>
           {missing.length > 0 && <p className="mt-1">Missing columns: {missing.join(", ")}.</p>}
         </div>

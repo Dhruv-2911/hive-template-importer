@@ -1,19 +1,21 @@
 import type { ReactNode } from "react";
 
+import { ui } from "../styles";
+
 type Props = { children: ReactNode; saving: boolean; error: string | undefined; onSave: () => void; onCancel: () => void };
 
 /** Save / Cancel and any refusal, shared by the rich-text and HTML editors. */
 export function EditorFrame({ children, saving, error, onSave, onCancel }: Props) {
   return (
-    <div className="mt-2 rounded-md border border-teal-600 bg-white ring-2 ring-teal-100">
+    <div className={`mt-3 rounded-card bg-base p-2 neu-pressed ${ui.focusWithin}`}>
       {children}
-      <div className="flex items-center gap-2 border-t border-zinc-200 px-2 py-1.5">
+      <div className="flex items-center gap-3 px-2 pb-1.5 pt-2">
         <button
           type="button"
           onClick={onSave}
           disabled={saving}
           aria-label="Save text"
-          className="rounded bg-teal-700 px-2.5 py-1 text-xs font-medium text-white hover:bg-teal-800 disabled:opacity-60"
+          className={ui.smallPrimary}
         >
           {saving ? "Saving…" : "Save"}
         </button>
@@ -21,12 +23,12 @@ export function EditorFrame({ children, saving, error, onSave, onCancel }: Props
           type="button"
           onClick={onCancel}
           disabled={saving}
-          className="rounded border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+          className={ui.smallButton}
         >
           Cancel
         </button>
         {error && (
-          <p role="alert" className="text-xs text-red-700">
+          <p role="alert" className="text-xs font-medium text-danger">
             {error}
           </p>
         )}

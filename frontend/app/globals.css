@@ -1,19 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Soft UI tokens (docs/design.md). Text colours keep at least 4.5:1 against --color-base. */
+@theme {
+  --color-base: #e6ebf1;
+  --color-ink: #1e2a38;
+  --color-muted: #4a5668;
+  --color-meta: #566376;
+  --color-line: #cfd7e1;
+  --color-accent: #0d6b61;
+  --color-accent-strong: #0a5850;
+  --color-danger: #b42318;
+  --color-success: #05603a;
+  --color-note: #b45309;
+
+  --radius-control: 10px;
+  --radius-card: 16px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+:root {
+  color-scheme: light;
+  --neu-light: rgb(255 255 255 / 0.9);
+  --neu-dark: rgb(163 177 198 / 0.7);
+}
+
+/* The only depths in the app: raised (containers, buttons) and pressed (inputs, current choice, read-only values). */
+@utility neu-raised {
+  box-shadow: 6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+}
+@utility neu-raised-sm {
+  box-shadow: 3px 3px 7px var(--neu-dark), -3px -3px 7px var(--neu-light);
+}
+@utility neu-pressed {
+  box-shadow: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
+}
+@utility neu-pressed-sm {
+  box-shadow: inset 2px 2px 5px var(--neu-dark), inset -2px -2px 5px var(--neu-light);
+}
+
+/* Content scrolling under the header fades out instead of ending in a hard line. */
+@utility scroll-fade {
+  mask-image: linear-gradient(to bottom, transparent, #000 1.25rem, #000 calc(100% - 1.25rem), transparent);
+}
+
+@utility scrollbar-soft {
+  scrollbar-width: thin;
+  scrollbar-color: #b6c1cf transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--color-base);
+  color: var(--color-ink);
+  /* The platform's own UI font: hinted for its screen, so small text stays even at every size. */
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+::selection {
+  background: rgb(13 107 97 / 0.2);
 }
 
 /* Imported Spectora comment HTML (sanitized in lib/sanitize.ts). Tailwind's reset removes these defaults. */
@@ -23,8 +65,10 @@ body {
   margin-top: 0.5rem;
 }
 .comment-html a {
-  color: var(--color-teal-700);
+  color: var(--color-accent);
+  font-weight: 500;
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 .comment-html ul {
   list-style: disc;
@@ -34,4 +78,3 @@ body {
   list-style: decimal;
   padding-left: 1.25rem;
 }
-

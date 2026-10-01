@@ -1,22 +1,23 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { ui } from "./styles";
+
 export function PageMessage({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) {
   return (
-    <main className="mx-auto max-w-xl px-6 py-24" role="status">
-      <h1 className="text-lg font-semibold text-zinc-900">{title}</h1>
-      <div className="mt-2 text-sm text-zinc-600">{children}</div>
-      {action && <div className="mt-6 flex gap-3">{action}</div>}
+    <main className="mx-auto w-full max-w-xl px-6 py-24" role="status">
+      <div className={`p-8 ${ui.card}`}>
+        <h1 className="text-xl font-bold tracking-tight text-ink">{title}</h1>
+        <div className="mt-2 text-sm text-muted">{children}</div>
+        {action && <div className="mt-6 flex gap-4">{action}</div>}
+      </div>
     </main>
   );
 }
 
 export function LinkButton({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link
-      href={href}
-      className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
-    >
+    <Link href={href} className={ui.button}>
       {children}
     </Link>
   );
@@ -24,11 +25,7 @@ export function LinkButton({ href, children }: { href: string; children: ReactNo
 
 export function RetryButton({ onRetry }: { onRetry: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onRetry}
-      className="rounded-md bg-teal-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
-    >
+    <button type="button" onClick={onRetry} className={ui.primary}>
       Try again
     </button>
   );
@@ -37,16 +34,19 @@ export function RetryButton({ onRetry }: { onRetry: () => void }) {
 export function TemplateSkeleton() {
   return (
     <div className="flex h-screen flex-col" aria-busy="true" aria-label="Loading the template">
-      <div className="h-20 border-b border-zinc-200 bg-white" />
-      <div className="flex flex-1">
-        <div className="w-80 space-y-2 border-r border-zinc-200 bg-zinc-50 p-4">
+      <div className="space-y-2 px-6 pb-5 pt-4">
+        <div className="h-4 w-24 animate-pulse rounded-full neu-pressed-sm" />
+        <div className="h-7 w-96 animate-pulse rounded-full neu-pressed-sm" />
+      </div>
+      <div className="flex min-h-0 flex-1 gap-8 pb-6 pl-6 pr-8">
+        <div className={`w-80 space-y-3 p-5 ${ui.card}`}>
           {Array.from({ length: 12 }, (_, i) => (
-            <div key={i} className="h-6 animate-pulse rounded bg-zinc-200" />
+            <div key={i} className="h-6 animate-pulse rounded-control neu-pressed-sm" />
           ))}
         </div>
-        <div className="flex-1 space-y-4 p-8">
+        <div className="flex-1 space-y-5 pt-4">
           {Array.from({ length: 4 }, (_, i) => (
-            <div key={i} className="h-20 animate-pulse rounded bg-zinc-100" />
+            <div key={i} className={`h-28 animate-pulse ${ui.card}`} />
           ))}
         </div>
       </div>

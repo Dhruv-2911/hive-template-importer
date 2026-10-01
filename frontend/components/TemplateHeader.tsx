@@ -8,9 +8,7 @@ import { api, type TemplateTree } from "@/lib/api";
 import type { TemplateEdits } from "@/lib/useTemplateEdits";
 
 import { InlineName } from "./InlineName";
-
-const BUTTON =
-  "shrink-0 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50 disabled:opacity-60";
+import { ui } from "./styles";
 
 export function TemplateHeader({ template, edits }: { template: TemplateTree; edits: TemplateEdits }) {
   const router = useRouter();
@@ -26,29 +24,29 @@ export function TemplateHeader({ template, edits }: { template: TemplateTree; ed
   const comments = items.reduce((total, item) => total + item.comments.length, 0);
 
   return (
-    <header className="flex items-center justify-between gap-6 border-b border-zinc-200 bg-white px-6 py-4">
+    <header className="flex items-center justify-between gap-6 px-6 pb-5 pt-4">
       <div className="min-w-0">
-        <Link href="/templates/" className="text-sm text-teal-700 hover:underline">
+        <Link href="/templates/" className={`text-sm ${ui.link}`}>
           Templates
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="mt-0.5 flex items-center gap-2">
           <InlineName
             kind="template"
             value={template.name}
             source={template.source_name}
             onSave={edits.renameTemplate}
             as="h1"
-            className="text-lg font-semibold text-zinc-900"
+            className="text-xl font-bold tracking-tight text-ink"
           />
           {template.is_sample && <Badge>Sample</Badge>}
           {template.copied_from_id && <Badge>Copy</Badge>}
         </div>
-        <p className="text-sm text-zinc-500">
+        <p className="mt-0.5 text-sm text-muted">
           Imported from Spectora · {template.sections.length} sections · {items.length} items · {comments} comments
           {template.copied_from_id && (
             <>
               {" · "}
-              <Link href={`/template/?id=${template.copied_from_id}`} className="text-teal-700 hover:underline">
+              <Link href={`/template/?id=${template.copied_from_id}`} className={ui.link}>
                 Open the original
               </Link>
             </>
@@ -57,15 +55,15 @@ export function TemplateHeader({ template, edits }: { template: TemplateTree; ed
       </div>
       <div className="flex shrink-0 items-center gap-3">
         {duplicate.isError && (
-          <p role="alert" className="text-sm text-red-700">
+          <p role="alert" className="text-sm font-medium text-danger">
             {duplicate.error.message}
           </p>
         )}
-        <button type="button" className={BUTTON} disabled={duplicate.isPending} onClick={() => duplicate.mutate()}>
+        <button type="button" className={ui.button} disabled={duplicate.isPending} onClick={() => duplicate.mutate()}>
           {duplicate.isPending ? "Duplicating…" : "Duplicate"}
         </button>
         {template.import_run_id && (
-          <Link href={`/import/?id=${template.import_run_id}`} className={BUTTON}>
+          <Link href={`/import/?id=${template.import_run_id}`} className={ui.button}>
             Import report
           </Link>
         )}
@@ -76,6 +74,6 @@ export function TemplateHeader({ template, edits }: { template: TemplateTree; ed
 
 function Badge({ children }: { children: string }) {
   return (
-    <span className="rounded border border-zinc-300 px-1.5 py-px text-xs font-medium text-zinc-600">{children}</span>
+    <span className={`${ui.badge} text-muted`}>{children}</span>
   );
 }

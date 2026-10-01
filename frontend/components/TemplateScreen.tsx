@@ -62,9 +62,9 @@ export function TemplateScreen() {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <TemplateHeader template={template} edits={edits} />
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 gap-2 pb-6 pl-6">
         <SectionTree sections={template.sections} selectedItemId={selection?.item.id} onSelect={openItem} />
-        <main ref={main} className="relative min-w-0 flex-1 overflow-y-auto bg-white">
+        <main ref={main} className="scroll-fade scrollbar-soft relative min-w-0 flex-1 overflow-y-auto">
           {selection && (
             <ItemComments
               section={selection.section}

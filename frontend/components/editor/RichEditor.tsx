@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 
 import { normalizeLink } from "@/lib/editable";
 
+import { ui } from "../styles";
 import { EditorFrame } from "./EditorFrame";
 
 type Props = { html: string; save: (html: string | undefined) => Promise<void>; saving: boolean; error?: string; onCancel: () => void };
@@ -37,7 +38,7 @@ export function RichEditor({ html, save, saving, error, onCancel }: Props) {
         role: "textbox",
         "aria-multiline": "true",
         "aria-label": "Comment text",
-        class: "comment-html min-h-20 px-3 py-2 text-sm leading-6 text-zinc-800 outline-none",
+        class: "comment-html min-h-20 px-3 py-2 text-sm leading-6 text-ink outline-hidden",
       },
     },
   });
@@ -80,8 +81,8 @@ function Toolbar({ editor }: { editor: Editor }) {
   }
 
   return (
-    <div className="border-b border-zinc-200">
-      <div role="toolbar" aria-label="Formatting" className="flex flex-wrap gap-1 px-2 py-1">
+    <div className="px-1 pb-1 pt-1">
+      <div role="toolbar" aria-label="Formatting" className="flex flex-wrap gap-2 p-1">
         <Tool label="Bold" pressed={active.bold} onClick={() => chain().toggleBold().run()}><b>B</b></Tool>
         <Tool label="Italic" pressed={active.italic} onClick={() => chain().toggleItalic().run()}><i>I</i></Tool>
         <Tool label="Underline" pressed={active.underline} onClick={() => chain().toggleUnderline().run()}><u>U</u></Tool>
@@ -99,7 +100,7 @@ function Toolbar({ editor }: { editor: Editor }) {
         </Tool>
       </div>
       {linking && (
-        <div className="flex items-center gap-2 px-2 pb-2">
+        <div className="flex items-center gap-2 px-1 pb-1 pt-2">
           <input
             aria-label="Link address"
             placeholder="www.example.com/article"
@@ -107,16 +108,16 @@ function Toolbar({ editor }: { editor: Editor }) {
             autoFocus
             onChange={(event) => setAddress(event.target.value)}
             onKeyDown={(event) => event.key === "Enter" && (event.preventDefault(), applyLink())}
-            className="flex-1 rounded border border-zinc-300 px-2 py-1 text-xs outline-none focus:border-teal-600"
+            className={`flex-1 text-xs ${ui.input}`}
           />
-          <button type="button" onClick={applyLink} className="rounded border border-zinc-300 px-2 py-1 text-xs hover:bg-zinc-50">
+          <button type="button" onClick={applyLink} className={ui.smallButton}>
             Apply
           </button>
           {active.link && (
             <button
               type="button"
               onClick={() => (chain().extendMarkRange("link").unsetLink().run(), setLinking(false))}
-              className="rounded border border-zinc-300 px-2 py-1 text-xs hover:bg-zinc-50"
+              className={ui.smallButton}
             >
               Remove link
             </button>
@@ -127,6 +128,9 @@ function Toolbar({ editor }: { editor: Editor }) {
   );
 }
 
+// Toolbar buttons are raised, and stay pressed in while their formatting is on.
+const TOOL = `min-w-8 rounded-control bg-base px-2.5 py-1 text-xs font-semibold motion-safe:transition-shadow ${ui.focus}`;
+
 function Tool({ label, pressed, onClick, children }: { label: string; pressed: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
@@ -134,7 +138,7 @@ function Tool({ label, pressed, onClick, children }: { label: string; pressed: b
       aria-label={label}
       aria-pressed={pressed}
       onClick={onClick}
-      className={`rounded px-2 py-0.5 text-xs ${pressed ? "bg-teal-100 text-teal-900" : "text-zinc-700 hover:bg-zinc-100"}`}
+      className={`${TOOL} ${pressed ? "text-accent neu-pressed-sm" : "text-ink neu-raised-sm hover:text-accent active:neu-pressed-sm"}`}
     >
       {children}
     </button>

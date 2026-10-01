@@ -104,6 +104,8 @@ in an "Unclassified" group, and a blank section or item name is kept under "(bla
   Dev: pytest, pytest-cov, httpx2 (Starlette test client), ruff. Managed with uv.
 - **Frontend:** Next.js (App Router, `output: 'export'`, `trailingSlash: true`), TypeScript strict, Tailwind CSS,
   TanStack Query, TipTap, DOMPurify, openapi-typescript. Dev: ESLint, Playwright.
+- **Visual style:** soft UI (neumorphism), with tokens, depth rules and accessibility guard rails in
+  [`docs/design.md`](docs/design.md).
 - **Database:** Postgres 17 (Supabase runs 17.6). Local: docker compose. Production: **Supabase via the session pooler** (ADR-002). RLS is
   enabled with no policies.
 - **Deploy:** one multi-stage Docker image as a **Render** web service (ADR-001), kept awake by an external uptime

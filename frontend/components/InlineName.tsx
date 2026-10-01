@@ -4,6 +4,8 @@ import { useRef, useState, type ElementType } from "react";
 
 import { ApiError } from "@/lib/api";
 
+import { ui } from "./styles";
+
 type Props = {
   kind: "template" | "section" | "item" | "comment";
   value: string;
@@ -59,10 +61,10 @@ export function InlineName({ kind, value, source, onSave, as: Tag = "span", clas
               close();
             }
           }}
-          className={`w-full rounded border border-teal-600 bg-white px-1.5 py-0.5 outline-none ring-2 ring-teal-100 ${className ?? ""}`}
+          className={`w-full ${ui.input} ${className ?? ""}`}
         />
         {error && (
-          <p role="alert" className="mt-1 text-xs text-red-700">
+          <p role="alert" className="mt-1.5 text-xs font-medium text-danger">
             {error}
           </p>
         )}
@@ -72,10 +74,10 @@ export function InlineName({ kind, value, source, onSave, as: Tag = "span", clas
 
   const edited = value !== source;
   return (
-    <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
-      <Tag className={className}>{value.trim() || <em className="text-zinc-500">(no name)</em>}</Tag>
+    <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
+      <Tag className={className}>{value.trim() || <em className="text-meta">(no name)</em>}</Tag>
       {edited && (
-        <span className="rounded border border-teal-200 bg-teal-50 px-1.5 text-xs font-medium text-teal-800">Edited</span>
+        <span className={`${ui.badge} self-center text-accent`}>Edited</span>
       )}
       <button
         type="button"
@@ -85,7 +87,7 @@ export function InlineName({ kind, value, source, onSave, as: Tag = "span", clas
           setDraft(value);
           setEditing(true);
         }}
-        className="text-xs text-zinc-500 underline-offset-2 hover:text-teal-700 hover:underline"
+        className={ui.quiet}
       >
         Rename
       </button>
@@ -94,12 +96,12 @@ export function InlineName({ kind, value, source, onSave, as: Tag = "span", clas
           type="button"
           aria-expanded={showOriginal}
           onClick={() => setShowOriginal((shown) => !shown)}
-          className="text-xs text-zinc-500 underline-offset-2 hover:text-teal-700 hover:underline"
+          className={ui.quiet}
         >
           {showOriginal ? "Hide original" : "Show original"}
         </button>
       )}
-      {edited && showOriginal && <span className="w-full text-xs text-zinc-600">Imported as “{source}”</span>}
+      {edited && showOriginal && <span className="w-full text-xs text-muted">Imported as “{source}”</span>}
     </div>
   );
 }

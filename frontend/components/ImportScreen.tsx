@@ -10,6 +10,7 @@ import { ReportColumns } from "./report/ReportColumns";
 import { ReportNotices } from "./report/ReportNotices";
 import { ReportSummary } from "./report/ReportSummary";
 import { LinkButton, PageMessage, RetryButton } from "./States";
+import { ui } from "./styles";
 
 const date = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
 
@@ -42,7 +43,7 @@ export function ImportScreen() {
 
   const run = query.data;
   return (
-    <main className="mx-auto w-full max-w-5xl space-y-8 px-6 py-10">
+    <main className="mx-auto w-full max-w-5xl space-y-10 px-6 py-12">
       <ReportHeader run={run} />
       {run.report ? (
         <>
@@ -51,10 +52,10 @@ export function ImportScreen() {
           <ReportColumns report={run.report} />
         </>
       ) : (
-        <div role="alert" className="rounded-md border border-red-300 bg-red-50 p-4 text-sm text-red-900">
-          <p className="font-semibold">This file wasn&apos;t imported, and nothing was saved.</p>
-          <p className="mt-1">{run.error?.message}</p>
-          <div className="mt-3">
+        <div role="alert" className={`p-6 text-sm text-ink ${ui.card}`}>
+          <p className="text-base font-bold text-danger">This file wasn&apos;t imported, and nothing was saved.</p>
+          <p className="mt-1 text-muted">{run.error?.message}</p>
+          <div className="mt-5">
             <LinkButton href="/templates/">Import another file</LinkButton>
           </div>
         </div>
@@ -67,25 +68,22 @@ function ReportHeader({ run }: { run: ImportRun }) {
   return (
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <Link href="/templates/" className="text-sm text-teal-700 hover:underline">
+        <Link href="/templates/" className={`text-sm ${ui.link}`}>
           Templates
         </Link>
-        <h1 className="text-2xl font-semibold text-zinc-900">Import report</h1>
-        <p className="mt-1 text-sm text-zinc-600">
+        <h1 className="mt-0.5 text-3xl font-bold tracking-tight text-ink">Import report</h1>
+        <p className="mt-2 text-sm text-muted">
           {run.filename} · {date.format(new Date(run.created_at))}
         </p>
       </div>
-      <div className="flex gap-3">
+      <div className="flex gap-4">
         {run.status === "succeeded" && (
-          <a href={api.importFileUrl(run.id)} className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50">
+          <a href={api.importFileUrl(run.id)} className={ui.button}>
             Download original file
           </a>
         )}
         {run.template_id && (
-          <Link
-            href={`/template/?id=${run.template_id}`}
-            className="rounded-md bg-teal-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-800"
-          >
+          <Link href={`/template/?id=${run.template_id}`} className={ui.primary}>
             Open template
           </Link>
         )}

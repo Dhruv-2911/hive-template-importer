@@ -3,6 +3,7 @@ import type { TemplateEdits } from "@/lib/useTemplateEdits";
 
 import { CommentCard } from "./CommentCard";
 import { InlineName } from "./InlineName";
+import { ui } from "./styles";
 
 // Spectora's three comment types, in its own order, plus a group for rows whose type couldn't be read.
 const GROUPS: { type: string; label: string; empty: string }[] = [
@@ -24,14 +25,14 @@ export function ItemComments({ section, item, highlightedRow, notesByRow, edits 
   const byType = (type: string): Comment[] => item.comments.filter((c) => c.comment_type === type);
   return (
     <>
-      <header className="border-b border-zinc-200 px-8 py-5">
+      <header className="px-8 pb-1 pt-6">
         <InlineName
           kind="section"
           value={section.name}
           source={section.source_name}
           onSave={(name) => edits.renameSection(section.id, name)}
           as="p"
-          className="text-sm text-zinc-500"
+          className="text-sm font-semibold text-meta"
         />
         <InlineName
           kind="item"
@@ -39,19 +40,19 @@ export function ItemComments({ section, item, highlightedRow, notesByRow, edits 
           source={item.source_name}
           onSave={(name) => edits.renameItem(item.id, name)}
           as="h2"
-          className="text-xl font-semibold text-zinc-900"
+          className="text-2xl font-bold tracking-tight text-ink"
         />
       </header>
       {GROUPS.filter((g) => g.type !== "unknown" || byType("unknown").length > 0).map((group) => {
         const comments = byType(group.type);
         const headingId = `group-${group.type}`;
         return (
-          <section key={group.type} aria-labelledby={headingId} className="px-8 pt-6">
-            <h3 id={headingId} className="mb-2 text-sm font-semibold text-zinc-700">
-              {group.label} <span className="font-normal text-zinc-500">({comments.length})</span>
+          <section key={group.type} aria-labelledby={headingId} className="px-8 pt-8">
+            <h3 id={headingId} className="mb-4 text-sm font-bold uppercase tracking-wider text-muted">
+              {group.label} <span className="font-semibold text-meta">({comments.length})</span>
             </h3>
             {comments.length ? (
-              <ol className="divide-y divide-zinc-200 overflow-hidden rounded-md border border-zinc-200">
+              <ol className="space-y-5">
                 {comments.map((comment) => (
                   <CommentCard
                     key={comment.id}
@@ -64,12 +65,12 @@ export function ItemComments({ section, item, highlightedRow, notesByRow, edits 
                 ))}
               </ol>
             ) : (
-              <p className="text-sm text-zinc-500">{group.empty}</p>
+              <p className={`px-5 py-4 text-sm text-muted ${ui.well}`}>{group.empty}</p>
             )}
           </section>
         );
       })}
-      <div className="h-8" />
+      <div className="h-10" />
     </>
   );
 }
