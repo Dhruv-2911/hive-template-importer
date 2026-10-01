@@ -186,3 +186,21 @@ def test_verification_also_catches_a_section_renamed_on_the_way_in(client, clean
     assert details["mismatched_comments"] == 35
     assert {m["field"] for m in details["mismatches"]} == {"section"}
     assert count(clean_db, "templates") == 0
+
+
+def test_an_import_takes_a_fixed_number_of_statements(client, residential_bytes):
+    # Without render_nulls the ORM split 366 comments into 127 INSERTs (one per run of rows with the same
+    # empty fields), and every one was a round trip to Supabase.
+    from sqlalchemy import event
+
+    statements: list[str] = []
+    engine = client.app.state.engine
+    listener = lambda conn, cursor, statement, *args: statements.append(statement)  # noqa: E731
+    event.listen(engine, "before_cursor_execute", listener)
+    try:
+        assert upload(client, residential_bytes, RESIDENTIAL_EXPORT.name).status_code == 201
+    finally:
+        event.remove(engine, "before_cursor_execute", listener)
+
+    assert len([s for s in statements if s.lstrip().upper().startswith("INSERT INTO COMMENTS")]) == 1
+    assert len(statements) <= 12

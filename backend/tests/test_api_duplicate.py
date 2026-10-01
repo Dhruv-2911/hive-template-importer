@@ -139,3 +139,24 @@ def test_a_copy_that_fails_part_way_leaves_nothing_behind(make_client, clean_db,
     with clean_db.connect() as connection:
         assert connection.execute(text("select count(*) from templates")).scalar_one() == 1
         assert connection.execute(text("select count(*) from sections")).scalar_one() == 12
+
+
+def test_the_copy_is_made_inside_the_database_in_a_fixed_number_of_statements(client, original):
+    # Copying row by row through the app sent ~1 MB of comments each way and took 9.5 s against Supabase.
+    from sqlalchemy import event
+
+    statements: list[str] = []
+    engine = client.app.state.engine
+    listener = lambda conn, cursor, statement, *args: statements.append(statement)  # noqa: E731
+    event.listen(engine, "before_cursor_execute", listener)
+    try:
+        duplicate(client, original["id"])
+    finally:
+        event.remove(engine, "before_cursor_execute", listener)
+
+    copy_statements = [s for s in statements if s.lstrip().upper().startswith(("INSERT", "SELECT"))]
+    # template lookup + template insert + one INSERT ... SELECT per level + the tree read by duplicate() above
+    assert len(copy_statements) <= 10
+    assert not any(
+        s.lstrip().upper().startswith("SELECT") and "source_columns" in s for s in copy_statements[:5]
+    )

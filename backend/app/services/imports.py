@@ -125,7 +125,9 @@ def _save_and_verify(
     sections, items, comments = _rows(template_id, imported.template)
     session.execute(insert(Section), sections)
     session.execute(insert(Item), items)
-    session.execute(insert(Comment), comments)
+    # render_nulls keeps every row the same shape, so all comments go in one batched statement instead of one
+    # per run of rows with the same empty fields (127 round trips for the Residential export).
+    session.execute(insert(Comment).execution_options(render_nulls=True), comments)
 
     mismatches = _compare_with_database(session, template_id, imported.template)
     if mismatches:
