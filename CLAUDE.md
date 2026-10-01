@@ -52,6 +52,10 @@ accounted for:
 
 Also run the failure fixtures listed in `docs/spectora-export-format.md`.
 
+Gate every commit on the test runner's own exit code. `pytest | tail` always succeeds because a pipeline returns
+the last command's status; that let a commit through once (2026-10-01) while the local database was down. Start the
+database first: `docker compose up -d --wait db`.
+
 ## Boundaries
 
 - No credentials in the repo. Environment variables go in `.env.local` (gitignored), and `.env.example` documents them.
