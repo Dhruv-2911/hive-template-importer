@@ -1,5 +1,6 @@
-# Render Blueprint (ADR-001): one Docker web service. DATABASE_URL is the Supabase session pooler URL (ADR-002)
-# and is entered in the Render dashboard, never committed.
+# Render Blueprint (ADR-001): one Docker web service. DATABASE_URL is the Supabase session pooler URL (ADR-002), and
+# SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY are the project's sign-in settings (ADR-009). All three are entered in the
+# Render dashboard, never committed.
 services:
   - type: web
     name: hive-template-importer
@@ -11,6 +12,10 @@ services:
     autoDeploy: true
     envVars:
       - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
         sync: false
       - key: MAX_UPLOAD_MB
         value: "10"

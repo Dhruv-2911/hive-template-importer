@@ -63,6 +63,21 @@ report with:
 4. **Kept but not editable**, and **not in Spectora's export**, as separate lists.
 5. **The original file**, downloadable.
 
+## Sign-in and Hive's layout (added 3 October 2026)
+
+- **Sign-in protects the whole app.** Anyone can create an account with an email and password, and everyone who signs
+  in shares one workspace. The browser signs in through Supabase Auth, and the API checks the access token on every
+  data request against the project's published keys. That check happens locally, so no request waits on Supabase
+  ([ADR-009](docs/decisions/ADR-009-supabase-auth-sign-in.md)).
+- **Supabase's Data API stays closed.** The publishable key is now visible in the browser. Row-level security, on
+  since day one with no policies, means that key can't read the tables.
+- **The layout follows Hive's own template screen.** That gives an app rail and a template page with Back to Templates,
+  an Overview, collapsible sections, and search across the whole template. The look is flat, with a blue accent. The
+  app now opens on the sample's Overview instead of its first item. The structure is borrowed, not the brand
+  ([design](docs/design.md)).
+- **The look changed twice.** Soft UI (neumorphism) came first and was replaced at the user's request by this flat,
+  Hive-like look. Both were checked for text contrast; the numbers are in `docs/design.md`.
+
 ## What I cut, and why
 
 | Cut | Why |
@@ -71,7 +86,7 @@ report with:
 | Editing severity, options, recommendations, answer types | They're kept and shown. Editing them properly needs Hive's own vocabulary, which the export doesn't include. |
 | Deleting templates | Not needed to prove faithful import. Test imports can only be removed with SQL (see Known issues). |
 | Photos | Every photo column is empty in both exports, so the format of a filled cell is unknown. A filled one would be kept and flagged. |
-| Login, multiple tenants, concurrent-edit detection | It's a single-user demo. The last write wins. |
+| Per-user templates, roles, password reset, concurrent-edit detection | One shared workspace behind sign-in is what was asked for. Password reset needs a working email flow, and Supabase's built-in mailer only sends a few emails an hour. The last write wins. |
 | An LLM in the import path | The export's headers are self-describing, so a deterministic parser can be proven complete. A model would add the invented, merged or dropped content the assignment warns about ([ADR-003](docs/decisions/ADR-003-deterministic-importer-no-llm.md)). |
 | Other vendors, exporting back to Spectora, reports, scheduling, payments, mobile | Out of scope for the assignment, or not needed to prove the import. |
 
@@ -80,19 +95,25 @@ report with:
 - **Measured, not assumed.** `scripts/profile_export.py` profiled both exports before any parser code was written
   (`docs/spectora-export-format.md`). Test expectations were taken from the raw file. Twice, a value I'd assumed (a row
   number, an option order) turned out wrong when I checked it, and I corrected the test, not the code.
-- **137 backend tests** (`uv run pytest`), with 97% coverage overall and 99% on the importer:
+- **167 backend tests** (`uv run pytest`), with 97% coverage overall and 99% on the importer:
   - golden tests that pin both exports to their profiled counts, row lists and order
   - variant fixtures and one test per rejection code (each also checks that nothing was written)
   - migration and RLS tests (a non-owner database role sees no rows)
   - edit tests showing the imported originals never change
   - duplicate independence in both directions, plus atomicity under a failing trigger
   - statement-count tests that keep import and duplicate to a fixed number of database round trips
-- **29 end-to-end tests** (`npm run e2e`) against the real Docker image, including the full demo path:
+  - 30 sign-in tests: no, expired, wrongly signed, wrong-audience, other-project, HS256, unsigned and anonymous tokens
+    are all refused; health and the sign-in config stay public; the app won't start without its sign-in settings
+- **40 end-to-end tests** (`npm run e2e`) against the real Docker image. They sign in with tokens minted from a
+  test-only key the container trusts, and Supabase's endpoints are mocked. They include the full demo path:
   - upload, then verify
   - rename and edit text, then reload
   - duplicate, then change the copy, and the original is unchanged
   - opening and closing the editor sends no request
   - pasted `<script>` never runs and isn't stored
+  - signed-out visitors are sent to sign in and back again, the next page is only followed on this site, both
+    sign-up cases (straight in, or confirm by email), sign-out, and the API's 401 without a token
+  - search finds a comment by a phrase from its text and opens it
 - **On the live URL** (1 October 2026):
   - Both reports show the verified counts (346/346 and 366/366) with the expected notice rows.
   - Four kinds of bad file were refused with their codes, and the template count didn't change.
@@ -110,6 +131,9 @@ report with:
 - **Saving rewrites whitespace:** once a comment's text is edited, TipTap normalizes its whitespace. The imported text is
   always one click away under "Show original text".
 - **Edits are last-write-wins.** Two people editing the same comment at the same time won't be warned.
+- **Signing out has a gap.** Signing out ends the browser's session, but an access token already issued stays valid
+  until it expires, an hour by default.
+- **There's no password reset** (see What I cut).
 
 ## Time spent
 

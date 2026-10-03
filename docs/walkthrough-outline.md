@@ -7,7 +7,8 @@ parts 2–6.
 
 - [ ] Reset the sample so it opens clean:
       `cd backend && DATABASE_URL="$(grep ^DATABASE_URL ../.env | cut -d= -f2-)" uv run python -m app.seed --reset`
-- [ ] Open https://hive-template-importer-f6w9.onrender.com once, so the instance is warm.
+- [ ] Open https://hive-template-importer-f6w9.onrender.com once, so the instance is warm. Sign out afterwards, so the
+      recording starts on the sign-in page.
 - [ ] On the desktop: `InterNACHI Residential -2026-09-28.xls`, plus one file that isn't a Spectora export, such as any
       `.txt` or `.png` (not Hive's PDF), for the failure case.
 - [ ] In the editor, open `backend/app/services/imports.py` (`_compare_with_database`), `backend/app/models.py`,
@@ -21,27 +22,34 @@ inspector leaving Spectora with four years of template work".
 
 ## 2. What you built (0:40–3:20)
 
-1. **The live URL opens on the sample** (Commercial, 346 comments). Point out the section/item navigator in Spectora's
-   order and the Information / Limitations / Defects groups, and say they mirror Spectora.
-2. **Import on camera.** Templates → *Choose export file…* → the Residential `.xls`. Mention that it's really an xlsx
-   with the wrong extension, so the importer reads the file's bytes, not its name.
-3. **The report:** "All 366 comments were saved and match the file". Say how: every saved comment is read back and
+1. **Sign in.** The live URL asks you to sign in. Choose *Create an account* and say that sign-up is open and everyone
+   shares one workspace (ADR-009).
+2. **It opens on the sample's Overview** (Commercial, 346 comments). Point out:
+   - the counts, and the import check ("All 346 comments… match the file")
+   - the sections in Spectora's order
+   - that the layout follows Hive's own template screen, so the import lands somewhere familiar
+
+   Open a section, then an item, and point out the Information / Limitations / Defects groups.
+3. **Import on camera.** *Import from Spectora* in the rail → *Choose export file…* → the Residential `.xls`. Mention
+   that it's really an xlsx with the wrong extension, so the importer reads the file's bytes, not its name.
+4. **The report:** "All 366 comments were saved and match the file". Say how: every saved comment is read back and
    compared before anything is kept. Scroll to **Needs a look**:
    - row 311: Spectora's export dropped the video
    - rows 263 and 264: the same name twice in one item, both kept
    - the 12 comments with no text in the export
 
    Then **Kept but not editable** and **Not in Spectora's export**.
-4. Click **Row 311**. It opens on the comment, and the import note sits right there.
-5. **An edit, saved:** rename the section *Roof* → "Roof & Gutters". Edit row 12's text and make a phrase bold. Reload:
-   both are still there. Show the **Edited** badge and **Show original**.
-6. **A copy, changed independently:** Duplicate → the copy opens. Rename a section in the copy, then *Open the
+5. Click **Row 311**. It opens on the comment, and the import note sits right there.
+6. **Search:** press Ctrl/⌘+K and type *doorknob* (or any phrase from a comment). Enter opens that comment.
+7. **An edit, saved:** open *Roof → Coverings* and rename the section *Roof* → "Roof & Gutters". Edit row 12's text
+   and make a phrase bold. Reload: both are still there. Show the **Edited** badge and **Show original**.
+8. **A copy, changed independently:** Duplicate → the copy opens. Rename a section in the copy, then *Open the
    original*. The original has its own edits and none of the copy's.
 
 ## 3. The repo (3:20–4:30)
 
-- Layout: `backend/app/importer/` (pure: bytes in, draft and report out), `services/`, `routes/`, `migrations/`;
-  `frontend/`; `docs/`; `SPEC.md`; `tasks/`.
+- Layout: `backend/app/importer/` (pure: bytes in, draft and report out), `services/`, `routes/`, `auth.py` (token
+  checks), `migrations/`; `frontend/`; `docs/`; `SPEC.md`; `tasks/`.
 - Stack: FastAPI, SQLAlchemy, Alembic and openpyxl; Next.js static export, TanStack Query and TipTap; Supabase Postgres;
   one Docker image on Render.
 - Existing code: the create-next-app scaffold and the libraries. OpenInspection was read for format quirks only; no code
@@ -69,6 +77,9 @@ inspector leaving Spectora with four years of template work".
 - **Render, not Vercel:** this is a deliberate deviation, so say it plainly: one image that runs the same locally and in
   production (ADR-001).
 - **No LLM:** the headers are self-describing, so a deterministic parser can be proven complete (ADR-003).
+- **Sign-in:** the whole app sits behind Supabase Auth, with one shared workspace. The API checks each token itself,
+  against the project's published keys, so no request waits on Supabase. The Data API stays closed because RLS was on
+  from day one (ADR-009).
 - *(If you explored Binsr: how its import differs from Hive's, and what that changed in your design.)*
 
 ## 6. The hard part (7:30–9:00)

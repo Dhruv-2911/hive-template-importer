@@ -43,7 +43,7 @@ export function SectionTree({ template, selectedItemId, onSelect, onOverview }: 
   }, [selectedItemId]);
 
   return (
-    <aside className="flex w-80 shrink-0 flex-col border-r border-line bg-surface">
+    <aside className="flex w-72 shrink-0 flex-col border-r border-line bg-surface xl:w-80">
       <div className="border-b border-line px-5 pb-4 pt-5">
         <Link href="/templates/" className={`inline-flex items-center gap-1.5 text-sm ${ui.link}`}>
           <ArrowLeft aria-hidden className="size-4" />
