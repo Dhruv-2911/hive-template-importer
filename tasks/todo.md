@@ -248,6 +248,22 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 - [x] Screenshots of every screen reviewed by the owner (the owner asked for the merge, 2026-10-03)
 - [x] `pytest`, lint, typecheck and `npm run e2e` all exit 0 on the branch (167 backend, 40 e2e; 2026-10-03)
 
+## Phase 5: Easier editing (2026-10-03, branch `edit-controls`)
+
+The owner said templates couldn't be changed (the grey Rename links were missed) and asked for answer choices to be
+clickable. They also asked for the app to open on the Templates list; that stays as is, because the brief says
+"Open on an imported template".
+
+- [x] **T26: Visible edit controls** (S)
+  - Acceptance: Rename, Edit text and Add text are bordered buttons with an icon; each item page has a one-line hint.
+    Accessible names are unchanged, so existing tests still find them.
+  - Verify: screenshots at 1440 and 1024; lint and typecheck.
+- [x] **T27: Clickable answer choices** (S)
+  - Acceptance: clicking a choice while reading opens the editor with it added; while editing it's inserted at the
+    cursor (comma after another choice, space after other words) and typing carries on. Saved only on Save; the options
+    don't change. SPEC US4, ADR-007 (amended), design.md and NOTES updated.
+  - Verify: two new e2e tests (insert and type, then click and save with no typing); `npm run e2e` exits 0.
+
 ## Human tasks (alongside the build)
 
 - [ ] **H1:** Email Hive about an extension (the stated deadline, 21 Sept, has passed).

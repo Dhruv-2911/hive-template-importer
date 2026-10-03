@@ -81,7 +81,7 @@ format.
 | `backend/` | `uv run ruff check . && uv run ruff format --check .` | Lint and format |
 | `backend/` | `uv run python -m app.seed --reset` | Operator only: replace the sample with a fresh import (copies and other templates are kept) |
 | `frontend/` | `npm run lint && npm run typecheck` | ESLint and TypeScript |
-| `frontend/` | `npm run e2e` | Builds the Docker image and runs 40 Playwright tests against it, on a fresh `hive_e2e` database. Tests sign in with tokens they mint; Supabase is mocked |
+| `frontend/` | `npm run e2e` | Builds the Docker image and runs 42 Playwright tests against it, on a fresh `hive_e2e` database. Tests sign in with tokens they mint; Supabase is mocked |
 | `frontend/` | `npm run gen:api` | Regenerates the TypeScript API types from FastAPI's OpenAPI schema (no server needed) |
 | repo root | `python scripts/profile_export.py "<export.xls>"` | Profiles any Spectora export: columns, hierarchy, escaping, rich content |
 

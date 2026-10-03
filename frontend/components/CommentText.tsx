@@ -1,11 +1,13 @@
 "use client";
 
+import { Pencil, Plus } from "lucide-react";
 import { useState } from "react";
 
 import { ApiError, type Comment } from "@/lib/api";
 import { fitsRichEditor } from "@/lib/editable";
 import { sanitizeCommentHtml } from "@/lib/sanitize";
 
+import { AnswerChoices } from "./editor/AnswerChoices";
 import { HtmlEditor } from "./editor/HtmlEditor";
 import { RichEditor } from "./editor/RichEditor";
 import { ui } from "./styles";
@@ -15,11 +17,18 @@ type Props = { comment: Comment; onSave: (html: string) => Promise<unknown> };
 /** A comment's text: shown sanitized, edited in place, with the imported original one click away. */
 export function CommentText({ comment, onSave }: Props) {
   const [mode, setMode] = useState<"view" | "rich" | "html">("view");
+  // An answer choice clicked while reading: the editor opens with it added at the end.
+  const [firstChoice, setFirstChoice] = useState<string>();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
   const [showOriginal, setShowOriginal] = useState(false);
   const edited = comment.text_html !== comment.source_text_html;
   const hasText = comment.text_html.trim() !== "";
+
+  function open(choice?: string) {
+    setFirstChoice(choice);
+    setMode(fitsRichEditor(comment.text_html) ? "rich" : "html");
+  }
 
   function close() {
     setMode("view");
@@ -42,7 +51,17 @@ export function CommentText({ comment, onSave }: Props) {
 
   if (mode !== "view") {
     const Editor = mode === "rich" ? RichEditor : HtmlEditor;
-    return <Editor html={comment.text_html} save={save} saving={saving} error={error} onCancel={close} />;
+    return (
+      <Editor
+        html={comment.text_html}
+        choices={comment.options}
+        firstChoice={firstChoice}
+        save={save}
+        saving={saving}
+        error={error}
+        onCancel={close}
+      />
+    );
   }
   return (
     <>
@@ -61,9 +80,10 @@ export function CommentText({ comment, onSave }: Props) {
       <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
         <button
           type="button"
-          onClick={() => setMode(fitsRichEditor(comment.text_html) ? "rich" : "html")}
-          className={ui.smallButton}
+          onClick={() => open()}
+          className={ui.edit}
         >
+          {hasText ? <Pencil aria-hidden className="size-3" /> : <Plus aria-hidden className="size-3" />}
           {hasText ? "Edit text" : "Add text"}
         </button>
         {edited && (
@@ -93,6 +113,7 @@ export function CommentText({ comment, onSave }: Props) {
           )}
         </div>
       )}
+      <AnswerChoices choices={comment.options} onPick={open} className="mt-4" />
     </>
   );
 }

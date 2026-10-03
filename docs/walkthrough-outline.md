@@ -43,6 +43,8 @@ inspector leaving Spectora with four years of template work".
 6. **Search:** press Ctrl/⌘+K and type *doorknob* (or any phrase from a comment). Enter opens that comment.
 7. **An edit, saved:** open *Roof → Coverings* and rename the section *Roof* → "Roof & Gutters". Edit row 12's text
    and make a phrase bold. Reload: both are still there. Show the **Edited** badge and **Show original**.
+   If there's time: on *Inspection Details → General*, click the *Cloudy* and *Hot* answer choices on Weather
+   Conditions, type a few words after them, and Save.
 8. **A copy, changed independently:** Duplicate → the copy opens. Rename a section in the copy, then *Open the
    original*. The original has its own edits and none of the copy's.
 

@@ -1,3 +1,5 @@
+import { Pencil } from "lucide-react";
+
 import type { Comment, Item, Notice, Section } from "@/lib/api";
 import type { TemplateEdits } from "@/lib/useTemplateEdits";
 
@@ -42,6 +44,14 @@ export function ItemComments({ section, item, highlightedRow, notesByRow, edits 
           as="h2"
           className="text-2xl font-semibold tracking-tight text-ink"
         />
+        <p className="mt-4 flex items-start gap-2.5 rounded-control bg-tint px-3.5 py-2.5 text-sm text-ink">
+          <Pencil aria-hidden className="mt-0.5 size-4 shrink-0 text-accent" />
+          <span>
+            Use <strong className="font-semibold">Rename</strong> on the section, the item or any comment, and{" "}
+            <strong className="font-semibold">Edit text</strong> to change what a comment says: type your own words or
+            click an answer choice to add it. Spectora&apos;s original is always kept, so you can compare.
+          </span>
+        </p>
       </header>
       {GROUPS.filter((g) => g.type !== "unknown" || byType("unknown").length > 0).map((group) => {
         const comments = byType(group.type);

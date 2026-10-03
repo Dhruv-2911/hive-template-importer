@@ -23,3 +23,18 @@ export function normalizeLink(input: string): string | undefined {
   if (/^[a-z][a-z0-9+.-]*:/i.test(value)) return undefined;
   return `https://${value}`;
 }
+
+/**
+ * The text to insert for an answer choice the inspector clicked: a comma after another choice ("Clear, Hot"), a space
+ * after other words ("Weather was Hot"), nothing at the start of a line.
+ */
+export function choiceInsertion(before: string, choice: string, choices: string[]): string {
+  if (before === "" || /\s$/.test(before)) return choice;
+  if (choices.some((other) => other !== "" && before.endsWith(other))) return `, ${choice}`;
+  return ` ${choice}`;
+}
+
+/** Escapes text for the HTML editor, which edits the comment's markup. */
+export function escapeHtml(text: string): string {
+  return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}

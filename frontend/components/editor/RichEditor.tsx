@@ -4,18 +4,29 @@ import { EditorContent, useEditor, useEditorState, type Editor } from "@tiptap/r
 import StarterKit from "@tiptap/starter-kit";
 import { useRef, useState } from "react";
 
-import { normalizeLink } from "@/lib/editable";
+import { choiceInsertion, normalizeLink } from "@/lib/editable";
 
 import { ui } from "../styles";
+import { AnswerChoices } from "./AnswerChoices";
 import { EditorFrame } from "./EditorFrame";
+import type { EditorProps } from "./HtmlEditor";
 
-type Props = { html: string; save: (html: string | undefined) => Promise<void>; saving: boolean; error?: string; onCancel: () => void };
+/** Inserts an answer choice at the cursor, as plain text (never parsed as HTML). */
+function insertChoice(editor: Editor, choice: string, choices: string[]) {
+  const before = editor.state.doc.textBetween(0, editor.state.selection.from, "\n", "\n");
+  editor.chain().focus().insertContent({ type: "text", text: choiceInsertion(before, choice, choices) }).run();
+}
 
-export function RichEditor({ html, save, saving, error, onCancel }: Props) {
+export function RichEditor({ html, choices, firstChoice, save, saving, error, onCancel }: EditorProps) {
   const changed = useRef(false);
   const editor = useEditor({
     immediatelyRender: false, // the page is prerendered; the editor only exists in the browser
     content: html,
+    onCreate: ({ editor: created }) => {
+      if (!firstChoice) return;
+      created.commands.focus("end");
+      insertChoice(created, firstChoice, choices);
+    },
     onUpdate: () => {
       changed.current = true;
     },
@@ -49,6 +60,14 @@ export function RichEditor({ html, save, saving, error, onCancel }: Props) {
     <EditorFrame saving={saving} error={error} onSave={onSave} onCancel={onCancel}>
       {editor && <Toolbar editor={editor} />}
       <EditorContent editor={editor} />
+      {editor && (
+        <AnswerChoices
+          choices={choices}
+          onPick={(choice) => insertChoice(editor, choice, choices)}
+          keepEditorFocus
+          className="border-t border-line px-3 py-2.5"
+        />
+      )}
     </EditorFrame>
   );
 }

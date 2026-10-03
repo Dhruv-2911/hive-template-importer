@@ -76,7 +76,7 @@ export function TemplateOverview({ template, run, edits, onOpenItem }: Props) {
         )}
       </Card>
 
-      <Card title={`Sections (${template.sections.length})`} description="In the same order as in Spectora. Open one to see its comments.">
+      <Card title={`Sections (${template.sections.length})`} description="In the same order as in Spectora. Open one to see and edit its comments.">
         <ol className="-mx-5 -mb-5 divide-y divide-line border-t border-line">
           {template.sections.map((section) => {
             const count = section.items.reduce((total, item) => total + item.comments.length, 0);

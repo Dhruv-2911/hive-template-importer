@@ -77,6 +77,10 @@ report with:
   ([design](docs/design.md)).
 - **The look changed twice.** Soft UI (neumorphism) came first and was replaced at the user's request by this flat,
   Hive-like look. Both were checked for text contrast; the numbers are in `docs/design.md`.
+- **Editing is easier to find.** Rename and Edit text are visible buttons, and each item page says what can be
+  changed. A comment's answer choices (Clear, Hot, Cloudy…) can be clicked to add them to its text, so an inspector
+  doesn't retype a value the template already lists. The choices themselves stay read-only
+  ([ADR-007](docs/decisions/ADR-007-editor-v1-scope.md), amended).
 
 ## What I cut, and why
 
@@ -104,12 +108,13 @@ report with:
   - statement-count tests that keep import and duplicate to a fixed number of database round trips
   - 30 sign-in tests: no, expired, wrongly signed, wrong-audience, other-project, HS256, unsigned and anonymous tokens
     are all refused; health and the sign-in config stay public; the app won't start without its sign-in settings
-- **40 end-to-end tests** (`npm run e2e`) against the real Docker image. They sign in with tokens minted from a
+- **42 end-to-end tests** (`npm run e2e`) against the real Docker image. They sign in with tokens minted from a
   test-only key the container trusts, and Supabase's endpoints are mocked. They include the full demo path:
   - upload, then verify
   - rename and edit text, then reload
   - duplicate, then change the copy, and the original is unchanged
   - opening and closing the editor sends no request
+  - clicking answer choices adds them to the text, and typing still works
   - pasted `<script>` never runs and isn't stored
   - signed-out visitors are sent to sign in and back again, the next page is only followed on this site, both
     sign-up cases (straight in, or confirm by email), sign-out, and the API's 401 without a token

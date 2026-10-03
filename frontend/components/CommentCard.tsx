@@ -69,15 +69,6 @@ export function CommentCard({ comment, highlighted, notes, onRename, onSaveText 
         </Note>
       ))}
 
-      {comment.options.length > 0 && (
-        <ul aria-label="Answer options" className="mt-3 flex flex-wrap gap-2">
-          {comment.options.map((option) => (
-            <li key={option} className={ui.chip}>
-              {option}
-            </li>
-          ))}
-        </ul>
-      )}
     </li>
   );
 }

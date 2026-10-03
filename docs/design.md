@@ -27,6 +27,11 @@ Only real destinations appear. Hive's placeholders that this app doesn't have (C
   solid with white text and an icon. Secondary buttons are white with a border.
 - **Selection:** the open tree entry (Overview or an item) is solid accent with white text, like Hive's. The current
   rail entry is accent text on a light tint.
+- **Edit controls** (2026-10-03): **Rename**, **Edit text** and **Add text** are always-visible small buttons with
+  accent text, a light accent border and a pencil (or plus) icon, because the owner missed the earlier grey links.
+  Each item page starts with one tinted line saying what can be changed. **Show original** stays a quiet text link.
+- **Answer choices:** pills with a plus icon, under the label *Answer choices · click one to add it to the text*. They
+  tint on hover. Inside the editor, a mouse click doesn't take focus, so the cursor stays in the text.
 - **Icons:** `lucide-react` line icons, always beside a text label or given an `aria-label`. Icons alone are `aria-hidden`.
 - **Type:** the platform's own UI font. Manrope and Plus Jakarta Sans rendered with uneven spacing on Linux Chrome at
   12–14px (tried 2026-10-01), and the walkthrough is recorded on Linux.

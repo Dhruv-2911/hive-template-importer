@@ -1,7 +1,7 @@
 # ADR-007: Editor v1: rename and edit text, and never rewrite what the user didn't touch
 
 ## Status
-Accepted
+Accepted (amended 2026-10-03: answer choices)
 
 ## Date
 2026-09-28
@@ -22,6 +22,9 @@ Accepted
 - Before a comment opens in TipTap, the client checks it for markup outside the allowlist. If it finds any, the comment
   opens in an HTML text area with a notice instead.
 - The last write wins. Concurrent edits aren't detected.
+- **Amended 2026-10-03, at the owner's request:** a comment's answer choices (Multiple Choice Options) are clickable.
+  Clicking one inserts its text into the comment text, as plain text, so the inspector doesn't retype a value the
+  template already lists. This is a text edit and follows the rules above. The options themselves stay read-only.
 
 ## Alternatives Considered
 

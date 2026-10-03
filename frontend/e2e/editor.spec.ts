@@ -98,3 +98,37 @@ test("script pasted into the HTML never runs and isn't saved", async ({ page, re
   expect(comment.text_html).not.toContain("<script");
   expect(comment.text_html).not.toContain("onerror");
 });
+
+// Residential rows 3 (Occupancy) and 7 (Weather Conditions) have answer choices and no text.
+test("clicking answer choices adds them to the text, and typing still works", async ({ page, request }) => {
+  const id = await freshTemplate(request);
+  await page.goto(`/template/?id=${id}&row=7`);
+  const card = page.locator("#row-7");
+  const choices = card.getByRole("group", { name: /^Answer choices/ });
+
+  // Clicking a choice while reading opens the editor with it added.
+  await choices.getByRole("button", { name: "Add “Cloudy” to the text" }).click();
+  const box = card.getByRole("textbox", { name: "Comment text" });
+  await expect(box).toHaveText("Cloudy");
+  // Another choice follows with a comma, and the inspector can keep typing.
+  await choices.getByRole("button", { name: "Add “Hot” to the text" }).click();
+  await expect(box).toHaveText("Cloudy, Hot");
+  await page.keyboard.type(" at the time of inspection.");
+  await card.getByRole("button", { name: "Save text" }).click();
+
+  await expect(card).toContainText("Cloudy, Hot at the time of inspection.");
+  const stored = await storedComment(request, id, 7);
+  expect(stored.text_html).toBe("<p>Cloudy, Hot at the time of inspection.</p>");
+  expect(stored.source_text_html).toBe("");
+  expect(stored.options).toContain("Cloudy"); // the choices themselves don't change
+});
+
+test("a choice clicked and saved with no typing is saved", async ({ page, request }) => {
+  const id = await freshTemplate(request);
+  await page.goto(`/template/?id=${id}&row=3`);
+  const card = page.locator("#row-3");
+  await card.getByRole("button", { name: "Add “Vacant” to the text" }).click();
+  await card.getByRole("button", { name: "Save text" }).click();
+  await expect(card.getByText("Text edited")).toBeVisible();
+  expect((await storedComment(request, id, 3)).text_html).toBe("<p>Vacant</p>");
+});

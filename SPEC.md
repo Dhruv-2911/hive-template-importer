@@ -63,17 +63,24 @@ it can **trust is complete**. The user works at a desk, is not technical, and ha
   expands to show its items with comment counts, and the section holding the open item is expanded.
 - Choosing an item shows its comments grouped into **Information / Limitations / Defects**, with sanitized HTML
   rendered (links clickable, opening in a new tab).
-- Read-only details for each comment: severity, multiple-choice options, recommendation key, answer type and default value.
+- Read-only details for each comment: severity, recommendation key, answer type and default value. Multiple-choice
+  options are listed as **answer choices** (US4).
 - **Import notes on the comment itself:** every notice the import report holds for a comment's source row (US2) is shown
   on that comment, e.g. "This comment had an embedded video in Spectora…" on Commercial row 318. They come from the
   template's stored import report, so a copy shows its original's notes. They describe the import, so they stay after
   the comment is edited.
 
 **US4: Edit** (ADR-007). Rename the template, sections, items and comment names; edit comment text.
+- **Rename** and **Edit text** (or **Add text**) are visible buttons with an icon, next to every name and comment. Each
+  item page starts with one line saying what can be changed.
 - Changes save to the database and are still there after a reload and a container restart.
 - Edited fields show an **Edited** badge and **Show original**.
 - Comment text uses TipTap (paragraphs, bold, italic, underline, links, lists). A comment is sent to the server **only when
   the user changes it**. A comment with markup outside the allowlist opens in HTML mode with a notice.
+- **Answer choices** (added 2026-10-03): a comment's multiple-choice options are buttons. Clicking one adds its text to
+  the comment's text: at the end when reading (the editor opens), or at the cursor while editing. After another choice
+  it's joined with a comma ("Cloudy, Hot"), after other words with a space. The inspector can type anything around it.
+  It's saved like any text edit, only on **Save**. The options themselves don't change.
 
 **US5: Duplicate.** Copy a template and edit the copy on its own.
 - **Duplicate** creates `"<name> (copy)"`: a deep copy of sections, items, comments and stored source data, done in one transaction.

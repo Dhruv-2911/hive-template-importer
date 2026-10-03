@@ -1,5 +1,6 @@
 "use client";
 
+import { Pencil } from "lucide-react";
 import { useRef, useState, type ElementType } from "react";
 
 import { ApiError } from "@/lib/api";
@@ -74,7 +75,7 @@ export function InlineName({ kind, value, source, onSave, as: Tag = "span", clas
 
   const edited = value !== source;
   return (
-    <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
+    <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
       <Tag className={className}>{value.trim() || <em className="text-meta">(no name)</em>}</Tag>
       {edited && (
         <span className={`${ui.badge} self-center text-accent`}>Edited</span>
@@ -87,8 +88,9 @@ export function InlineName({ kind, value, source, onSave, as: Tag = "span", clas
           setDraft(value);
           setEditing(true);
         }}
-        className={ui.quiet}
+        className={ui.edit}
       >
+        <Pencil aria-hidden className="size-3" />
         Rename
       </button>
       {edited && (
