@@ -182,6 +182,72 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 - [x] SPEC.md success criteria 1–8 all met (checked live 2026-10-01; evidence in NOTES.md → How I checked)
 - [ ] Repo, live URL, video and NOTES.md ready to send (remaining: the video, time spent in NOTES.md, reviewer access to the private repo, removing test templates from production)
 
+## Phase 4: Sign-in and Hive's layout (2026-10-03, branch `auth-and-layout`)
+
+- [x] **T18: Spec, ADR-009 and design brief** (S)
+  - Acceptance: SPEC.md has US8 (sign in), US9 (search), and the new US3/US7 layout. ADR-009 records the auth design;
+    `docs/design.md` records the flat, Hive-like look with its contrast table.
+  - Verify: the owner's answers (the whole app, a shared workspace, email and password, open sign-up; Hive's layout,
+    flat; overview, collapsible sections, rail, search) are each traceable to a spec line.
+
+- [ ] **T19: The API requires a valid Supabase token** (M)
+  - Acceptance:
+    - Every `/api` route except health and `/api/auth/config` returns 401 `AUTH_REQUIRED` for a missing, expired,
+      wrongly signed, wrong-audience, wrong-issuer, HS256 or anonymous token.
+    - A valid ES256 token passes.
+    - `create_app` refuses to start without the Supabase settings.
+    - The existing 137 tests pass with a token.
+  - Verify: `uv run pytest -q` exits 0; `uv run ruff check .`.
+  - Files: `backend/app/auth.py`, `app/config.py`, `app/main.py`, `app/api_errors.py`, `app/routes/auth.py`,
+    `tests/conftest.py`, `tests/test_auth.py`
+
+- [ ] **T20: Sign-in in the browser** (M)
+  - Acceptance:
+    - `/login/` signs in and creates accounts (including the "check your inbox" case).
+    - Every other page redirects to `/login/?next=` when signed out.
+    - API calls carry the token, and a 401 signs out.
+    - The original file downloads with the token.
+  - Verify: `npm run lint && npm run typecheck && npm run build`; a manual sign-in against the real project.
+  - Files: `frontend/lib/auth.tsx`, `lib/api.ts`, `app/providers.tsx`, `app/login/page.tsx`
+
+- [ ] **T21: Flat tokens, app rail, Templates and Import pages** (M)
+  - Acceptance: the `docs/design.md` tokens, a rail with Templates / Import from Spectora / email / Sign out, the
+    `/templates/` list, `/upload/`, and the import report restyled. No neumorphic classes are left.
+  - Verify: screenshots at 1440 and 1024; lint and typecheck.
+
+- [ ] **T22: The template page: overview landing and collapsible sections** (L)
+  - Acceptance: `/` and `/template/?id=` open on the Overview. The section panel expands and collapses, with
+    `aria-expanded`, and the open item's section is expanded. The item view keeps every behaviour (rename, edit, notes,
+    highlighted row).
+  - Verify: screenshots, and the existing e2e behaviour still holds.
+
+- [ ] **T23: Template search** (M)
+  - Acceptance: US9. A combobox and listbox; Ctrl/⌘+K, the arrow keys, Enter and Escape; results in template order with
+    where each is and the match; choosing one opens the item and highlights the comment.
+  - Verify: an e2e test finds a comment by a phrase from its text and opens it.
+
+- [ ] **T24: E2E behind sign-in** (M)
+  - Acceptance: the container runs with a fake Supabase URL and the test-only key set. All existing specs run signed
+    in, with tokens minted by the test. A new spec covers the signed-out redirect, sign in, create account (both the
+    session and the confirmation-email case), sign out, an API 401 without a token, and search.
+  - Verify: `npm run e2e` exits 0.
+
+- [ ] **T25: Go live** (S, needs the owner)
+  - Owner, first:
+    - In Supabase: Email provider on, *Confirm email* off, Site URL = the Render URL.
+    - In Render, add these env vars: `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`.
+  - Then merge to `main` and check:
+    - the live site redirects to sign-in
+    - a new account gets in
+    - the data routes return 401 without a token
+    - health stays public
+  - Then update the docs: the README's access instructions, NOTES and the walkthrough outline.
+  - Verify: the checks above on the live URL, recorded in NOTES.md.
+
+### Checkpoint E: before merging
+- [ ] Screenshots of every screen reviewed by the owner
+- [ ] `pytest`, lint, typecheck and `npm run e2e` all exit 0 on the branch
+
 ## Human tasks (alongside the build)
 
 - [ ] **H1:** Email Hive about an extension (the stated deadline, 21 Sept, has passed).

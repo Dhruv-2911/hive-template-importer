@@ -1,6 +1,7 @@
 # Spec: Spectora template importer
 
-**Status: APPROVED 2026-09-28.** The decisions are recorded in `docs/decisions/` (ADR-001 to ADR-008).
+**Status: APPROVED 2026-09-28. Amended 2026-10-03:** sign-in (US8, ADR-009), Hive's layout (US3, US7) and template
+search (US9). The decisions are recorded in `docs/decisions/` (ADR-001 to ADR-009) and `docs/design.md`.
 Inputs: `docs/requirements.md` (what is graded) and `docs/spectora-export-format.md` (measured facts about both exports).
 Change this spec before building anything it doesn't describe.
 
@@ -52,9 +53,16 @@ it can **trust is complete**. The user works at a desk, is not technical, and ha
   embedded videos. Each is labelled "Spectora doesn't export this", as distinct from "we don't support this".
 - The original uploaded file can be downloaded from the report.
 
-**US3: Browse.** See the template the way the inspector knows it.
-- Left: the section → item tree. Right: the selected item's comments grouped into **Information / Limitations /
-  Defects**, with sanitized HTML rendered (links clickable, opening in a new tab).
+**US3: Browse.** See the template the way the inspector knows it, laid out like Hive's own template screen
+(`docs/design.md`).
+- A template opens on its **Overview**:
+  - its name and its counts (sections, items, comments; defects, information, limitations)
+  - the import check result, with links to the import report and the original file
+  - its sections, with item and comment counts
+- Left panel: **← Back to Templates**, the template name, **Overview**, then the sections in file order. Each section
+  expands to show its items with comment counts, and the section holding the open item is expanded.
+- Choosing an item shows its comments grouped into **Information / Limitations / Defects**, with sanitized HTML
+  rendered (links clickable, opening in a new tab).
 - Read-only details for each comment: severity, multiple-choice options, recommendation key, answer type and default value.
 - **Import notes on the comment itself:** every notice the import report holds for a comment's source row (US2) is shown
   on that comment, e.g. "This comment had an embedded video in Spectora…" on Commercial row 318. They come from the
@@ -89,7 +97,7 @@ it can **trust is complete**. The user works at a desk, is not technical, and ha
 Row-level problems don't block an import. They are imported and flagged: an unknown comment type is kept as `unknown`
 in an "Unclassified" group, and a blank section or item name is kept under "(blank section)" / "(blank item)".
 
-**US7: Seeded demo.** The live URL opens on the Commercial export, already imported. Seeding runs that file through the
+**US7: Seeded demo.** After sign-in, the live URL opens on the **Overview** of the Commercial export, already imported. Seeding runs that file through the
 **same import pipeline** (not a SQL dump), is idempotent, and marks the template `is_sample`.
 - `python -m app.seed` (run on every container start) imports the sample only if no sample exists, so restarts never
   touch edits.
@@ -98,13 +106,37 @@ in an "Unclassified" group, and a blank section or item name is kept under "(bla
   the sample, other imported templates and every import run are kept. Copies' `copied_from_id` becomes null.
   It prints what it deleted and what it created.
 
+**US8: Sign in** (ADR-009).
+- Every page except `/login/` needs a signed-in user. A signed-out visitor is sent to `/login/` and, after signing in,
+  back to the page they asked for (only a same-site path is followed).
+- `/login/` offers **Sign in** and **Create account**, with an email and a password. Supabase's own reasons are shown
+  (wrong password, already registered, password too short). If the project requires email confirmation, Create account
+  says to check the inbox.
+- Without a valid Supabase access token, every `/api` route except `/api/health` and `/api/auth/config` returns
+  `401 AUTH_REQUIRED`. A 401 while signed in (an expired or revoked session) signs the browser out and returns it to
+  `/login/`.
+- The app rail shows the signed-in email and **Sign out**, which returns to `/login/`.
+- Everyone who signs in shares one workspace: the same templates, with the last write winning.
+
+**US9: Search the template.**
+- A box above the template finds sections, items and comments whose name or text contains the query. It's
+  case-insensitive, starts at 2 characters, and lists results in template order.
+- Each result shows where it is (Section › Item › Comment) and the matching text. Choosing one opens that item with the
+  comment highlighted, as a report link does.
+- Keyboard: Ctrl/⌘+K focuses the box, the arrow keys move through results, Enter opens one and Escape clears. Up to 50
+  results are shown, with the total.
+- It searches the template already loaded in the browser and makes no API call.
+
 ## Tech Stack
 
-- **Backend:** Python 3.12, FastAPI, SQLAlchemy 2 + psycopg 3, Alembic, openpyxl, nh3, pydantic-settings.
+- **Backend:** Python 3.12, FastAPI, SQLAlchemy 2 + psycopg 3, Alembic, openpyxl, nh3, pydantic-settings, PyJWT[crypto].
   Dev: pytest, pytest-cov, httpx2 (Starlette test client), ruff. Managed with uv.
 - **Frontend:** Next.js (App Router, `output: 'export'`, `trailingSlash: true`), TypeScript strict, Tailwind CSS,
-  TanStack Query, TipTap, DOMPurify, openapi-typescript. Dev: ESLint, Playwright.
-- **Visual style:** soft UI (neumorphism), with tokens, depth rules and accessibility guard rails in
+  TanStack Query, TipTap, DOMPurify, openapi-typescript, `@supabase/supabase-js` (sign-in), `lucide-react` (icons).
+  Dev: ESLint, Playwright.
+- **Auth:** Supabase Auth with email and password. The backend verifies access tokens with PyJWT against the project's
+  published keys (ADR-009).
+- **Visual style:** Hive's layout with a flat look, with tokens and accessibility guard rails in
   [`docs/design.md`](docs/design.md).
 - **Database:** Postgres 17 (Supabase runs 17.6). Local: docker compose. Production: **Supabase via the session pooler** (ADR-002). RLS is
   enabled with no policies.
@@ -149,12 +181,19 @@ POST   /api/templates/{id}/duplicate  → 201 {template_id}
 PATCH  /api/sections/{id}             {name}
 PATCH  /api/items/{id}                {name}
 PATCH  /api/comments/{id}             {name?, text_html?}  (text_html sanitized with nh3 on save)
-GET    /api/health                    runs SELECT 1 (keeps the Render instance and Supabase awake)
+GET    /api/health                    runs SELECT 1 (keeps the Render instance and Supabase awake). Public
+GET    /api/auth/config               {supabase_url, supabase_publishable_key}: public values for the browser. Public
 ```
-Error shape: `{"error": {"code": "NOT_A_SPECTORA_EXPORT", "message": "...", "details": {...}}}`.
+Every other route needs `Authorization: Bearer <Supabase access token>` and otherwise returns `401 AUTH_REQUIRED`
+(ADR-009). Error shape: `{"error": {"code": "NOT_A_SPECTORA_EXPORT", "message": "...", "details": {...}}}`.
 
-Frontend routes (static export, ADR-008): `/` → the sample template · `/templates/` (list + upload) ·
-`/template/?id=` (editor) · `/import/?id=` (report).
+Frontend routes (static export, ADR-008):
+- `/login/` (sign in or create an account)
+- `/` → the sample template's overview
+- `/templates/` (the list)
+- `/upload/` (import from Spectora)
+- `/template/?id=` (the overview; `&item=` opens an item, `&row=` highlights a comment)
+- `/import/?id=` (the report)
 
 ## Commands
 
@@ -186,8 +225,16 @@ docker run --rm -p 8000:8000 -e PORT=8000 -e DATABASE_URL=... hive-importer
 python scripts/profile_export.py "<export file>"         # profile any export before trusting the parser with it
 ```
 
-Environment variables: `DATABASE_URL` (required), `PORT` (set by Render), `MAX_UPLOAD_MB` (default 10), `CORS_ORIGINS`
-(dev only), `NEXT_PUBLIC_API_BASE` (build time; empty in production). Documented in `.env.example`.
+Environment variables:
+- `DATABASE_URL`: required.
+- `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`: required by the web app, not by the seed.
+- `PORT`: set by Render.
+- `MAX_UPLOAD_MB`: default 10.
+- `CORS_ORIGINS`: dev only.
+- `NEXT_PUBLIC_API_BASE`: build time; empty in production.
+- `SUPABASE_JWKS`: a fixed key set, for tests only.
+
+They're documented in `.env.example`.
 
 ## Project Structure
 
@@ -202,12 +249,13 @@ backend/
   app/importer/              PURE: bytes → (TemplateDraft, ImportReport). No DB, no I/O
     detect.py  workbook.py  parse.py  report.py
   app/services/              persist + verify, duplicate, edits
-  app/routes/                imports.py, templates.py, edits.py
+  app/routes/                imports.py, templates.py, edits.py, auth.py (public config)
+  app/auth.py                verifies Supabase access tokens (ADR-009)
   migrations/                Alembic (enables RLS on every table)
   tests/fixtures/make_fixtures.py    generates failure and edge-case xlsx files
   tests/test_importer_*.py  tests/test_api_*.py
 frontend/
-  app/                       /, /templates, /template, /import
+  app/                       /, /login, /templates, /upload, /template, /import
   components/  lib/api.ts  lib/sanitize.ts (shared allowlist)  e2e/demo-path.spec.ts
 docs/                        requirements.md, spectora-export-format.md, decisions/ (ADRs)
 scripts/profile_export.py
@@ -249,7 +297,8 @@ def classify_type(raw: str, row: int, issues: list[RowIssue]) -> CommentType:
 | Failure cases | One test per US6 code. Each asserts the code, the message, and that **no template rows** were written | `test_importer_failures.py`, `test_api_imports.py` |
 | API integration | Real Postgres. Edit persists across sessions; copy independence both ways; import atomicity; round-trip matches for both files; a forced mismatch rolls back | `test_api_*.py` |
 | Sanitizer parity | The same HTML cases through DOMPurify and nh3 give the same allowed result | backend + frontend unit tests |
-| E2E | Upload → rename → reload → duplicate → edit copy → original unchanged; opening and closing a comment without changes sends no request | `frontend/e2e/demo-path.spec.ts` |
+| Auth | No, expired, wrongly signed, wrong-audience or anonymous tokens get 401; health and config stay public; startup refuses missing settings | `test_auth.py` |
+| E2E | Upload → rename → reload → duplicate → edit copy → original unchanged; opening and closing a comment without changes sends no request; signed-out redirect, sign in, create account, sign out, search | `frontend/e2e/*.spec.ts` (tokens minted with a test-only key; Supabase mocked) |
 
 Coverage bar: 90% line coverage on `app/importer/`. No bar elsewhere; the integration tests cover behaviour.
 
@@ -269,7 +318,7 @@ Coverage bar: 90% line coverage on `app/importer/`. No bar elsewhere; the integr
 | Add, delete or reorder sections, items and comments | Agreed for v1 (ADR-007). Reordering risks the "same order as Spectora" guarantee |
 | Editing severity, options, recommendations, answer types | Kept and displayed. Editing them needs Hive's own vocabulary, which the export doesn't include |
 | Photos | Every photo column is empty in both exports, and a filled cell's format is unknown. Kept and flagged if present |
-| Login, multiple tenants, concurrent-edit conflicts | A single-user demo. Last write wins |
+| Per-user templates, roles, password reset, multiple tenants, concurrent-edit conflicts | One shared workspace behind sign-in (ADR-009). Last write wins |
 | Deleting templates, exporting back to Spectora, other vendors | Not needed to prove faithful import |
 | Reports, scheduling, payments, mobile | Excluded by the assignment |
 
@@ -283,7 +332,9 @@ Coverage bar: 90% line coverage on `app/importer/`. No bar elsewhere; the integr
    An untouched comment's HTML stays byte-identical.
 5. Edits to a copy and to its original never affect each other (integration test + e2e).
 6. The generated variant fixtures import with no code changes.
-7. The Render URL opens on the seeded Commercial template, and the container runs with only `DATABASE_URL` (+ `PORT`) set.
+7. The Render URL asks a signed-out visitor to sign in, and then opens on the seeded Commercial template's overview.
+   The container runs with `DATABASE_URL`, `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (+ `PORT`) set.
+9. Without a valid token, every data route returns 401, and a new reviewer can create an account and get in.
 8. README and NOTES.md state that hosting is on Render rather than Vercel, and why (ADR-001). All the assignment's deliverables exist.
 
 ## Resolved questions (2026-09-28)
@@ -295,3 +346,5 @@ Coverage bar: 90% line coverage on `app/importer/`. No bar elsewhere; the integr
 | Improvement | An import report the inspector can trust | ADR-006 |
 | Editor scope | No add, delete or reorder in v1 | ADR-007 |
 | Holdout file | InterNACHI Residential, committed | this spec, US1 |
+| Sign-in (2026-10-03) | The whole app; one shared workspace; email and password; open sign-up | ADR-009, US8 |
+| Layout (2026-10-03) | Hive's layout with a flat look, an overview landing, collapsible sections, an app rail and search | `docs/design.md`, US3, US7, US9 |

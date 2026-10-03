@@ -49,6 +49,10 @@ The importer tasks (T4–T6) are pure and don't depend on T1–T3, so they can r
 2. **Baseline vertical slices (T7–T13).** Import to DB → seed → browse → upload and report → rename → edit text → duplicate.
    The app stays deployable after every task.
 3. **Prove it and ship it (T14–T17).** E2E against the container, the checklist against the live URL, the deliverable docs, and the video outline.
+4. **Sign-in and Hive's layout (T18–T25, added 2026-10-03).** Backend token checks first (the security boundary),
+   then the browser's sign-in, then the new shell, template page and search. E2E covers it with minted tokens. It's
+   built on the `auth-and-layout` branch and merged only when the owner has set up Supabase and Render, because `main`
+   deploys automatically. Tasks are in `tasks/todo.md`.
 
 ## Parallelization
 - **Safe to run in parallel:** T4–T6 alongside T1–T3. T10, T11 and T13 once T9 is done. T16 drafting alongside Phase 2.

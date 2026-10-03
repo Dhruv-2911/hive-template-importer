@@ -1,53 +1,64 @@
-# Visual design: soft UI (neumorphism)
+# Visual design: Hive's layout, flat look
 
-Decided 2026-10-01 at the user's request: the app uses a neumorphic ("soft UI") style. It's a restyle only. Every
-screen, label, role and behaviour stays the same, so the e2e tests (which select by role, text and `#row-N`) still
-apply unchanged.
+**Decided 2026-10-03.** This replaces the soft-UI (neumorphism) style of 2026-10-01. The user asked for the layout and
+flat look of Hive's own template screen, so the importer feels like part of the product it feeds. We borrow the
+structure, not the brand: no Hive name, logo or copy appears in the app.
 
-## The idea
+## Layout
 
-There's one surface colour. Everything is either part of the page, **raised** off it, or **pressed** into it, using two
-soft shadows (light from the top left, dark to the bottom right). Depth carries meaning, and only these meanings:
-
-| Depth | Used for |
+| Screen | Structure |
 |---|---|
-| **Raised** | Containers (the section navigator, comment cards, report panels) and things you can press (buttons). |
-| **Pressed** (inset) | Where you type (inputs, the editor), the current choice (the selected item, an active toolbar button), and read-only values (badges, answer options, the imported original). |
-| A button being pressed | Raised at rest, pressed while held down, so it sinks like a physical key. |
+| **App shell** (every page except sign-in) | A left rail: the app mark and name, then **Templates** and **Import from Spectora**, and the signed-in email with **Sign out** at the bottom. Pages sit on a faint page background to its right. |
+| **Template** (`/template/?id=`) | Top row: **Search this template** on the left, **Import report** and **Duplicate** on the right. Below it, a left panel with **← Back to Templates**, the template name, an **Overview** entry, then sections that expand to show their items, with comment counts. The right side shows the Overview or the open item's comments. |
+| **Overview** (where the app opens) | Eyebrow *Template overview*, the name, one stat strip (sections, items, comments), the comment types, an *Import* card (file, date, the verification result, links to the report and the original file), a *Template settings* card (rename) and a *Sections* card. |
+| **Templates** (`/templates/`) | Title, then one card listing the templates. **Import from Spectora** is the primary action. |
+| **Import from Spectora** (`/upload/`) | The how-to-export steps and the file chooser. A refusal says what to do next. |
+| **Import report** (`/import/?id=`) | Unchanged in content; restyled as cards. |
+| **Sign in** (`/login/`) | No shell: one centered card with *Sign in* / *Create account*. |
 
-There are two elevations (`raised`, `raised-sm`) and two insets (`pressed`, `pressed-sm`), and nothing else. Borders and
-shadows are never combined.
+Only real destinations appear. Hive's placeholders that this app doesn't have (Calendar, Inspections, drag handles,
+⋮ menus for reordering or deleting) are left out. ADR-007 keeps add, delete and reorder out of scope.
 
-## Where neumorphism usually fails, and the guard rails
+## Look
 
-Soft UI's known weaknesses are grey-on-grey text, controls you can only find by their shadow, and invisible focus.
-These rules prevent them:
+- **Surfaces:** white cards with a 1px `line` border, a 12px radius and a faint shadow, on the page background
+  `#f6f7fb`. The left rail and the template's section panel are white with a right border.
+- **Accent:** blue `#3d55d8` for primary buttons, links, the current navigation entry and focus. Primary buttons are
+  solid with white text and an icon. Secondary buttons are white with a border.
+- **Selection:** the open tree entry (Overview or an item) is solid accent with white text, like Hive's. The current
+  rail entry is accent text on a light tint.
+- **Icons:** `lucide-react` line icons, always beside a text label or given an `aria-label`. Icons alone are `aria-hidden`.
+- **Type:** the platform's own UI font. Manrope and Plus Jakarta Sans rendered with uneven spacing on Linux Chrome at
+  12–14px (tried 2026-10-01), and the walkthrough is recorded on Linux.
+- **Radius scale:** 8px for controls, 12px for cards. **Spacing:** Tailwind's 4px scale.
 
-- **Text contrast is at least 4.5:1** on the base `#e6ebf1`: ink `#1e2a38` (12.1:1), muted `#4a5668` (6.2:1), meta
-  `#566376` (5.1:1), links `#0d6b61` (5.3:1), danger `#b42318` (5.5:1). No text is lighter than the meta colour.
-- **The main action on each screen is filled teal** (white text, 6.4:1): *Choose export file…*, *Open template*, *Save*.
-  It doesn't rely on depth to be found.
-- **Focus is a solid 2px teal outline** with an offset on every control. It's never removed, and it uses `outline`, so
-  it can't be lost among the shadows.
-- **Selection is never shown by depth alone.** The selected item is also teal and semibold with `aria-current`, and an
-  active toolbar button is also teal with `aria-pressed`.
-- **The linked comment** (from a report row) gets a 2px amber-700 outline (4.2:1 against the base) as well as its import
-  note.
-- **Motion:** shadows animate only under `prefers-reduced-motion: no-preference`.
+## Accessibility guard rails
+
+| Use | Colour | Contrast |
+|---|---|---|
+| Body text (ink) | `#111827` | 17.7:1 on white, 16.6:1 on the page |
+| Secondary text (muted) | `#4b5563` | 7.6:1 on white |
+| Meta text (row numbers, counts) | `#6b7280` | 4.8:1 on white, 4.5:1 on the page. Never on the tint. |
+| Links and accent text | `#3d55d8` | 6.0:1 on white, 5.3:1 on the tint |
+| White on the accent (primary button, selected entry) | `#ffffff` on `#3d55d8` | 6.0:1 |
+| Danger / success / note | `#b42318` / `#067647` / `#b45309` | 6.6 / 5.7 / 5.0:1 on white |
+| Text-field borders | `#868fa1` | 3.3:1 on white (the WCAG 1.4.11 minimum for controls is 3:1) |
+
+- **Focus:** a 2px accent outline with a 2px offset on every control, drawn inset inside scrolling panels so it isn't
+  clipped.
+- **State is never colour alone:** the open entry also has `aria-current`, sections have `aria-expanded`, and the search
+  results are an ARIA combobox and listbox.
+- **Motion:** only colour transitions, and none under `prefers-reduced-motion: reduce`.
 
 ## Tokens
 
-They're defined once in `frontend/app/globals.css` (`@theme` colours plus `@utility` shadows) and used by name
-(`bg-base`, `text-ink`, `text-muted`, `text-meta`, `text-accent`, `neu-raised`, `neu-pressed`). Components don't use raw
-hex values or one-off shadows.
-
-- **Type:** the platform's own UI font (San Francisco, Segoe UI, Roboto or Ubuntu), with tabular figures for counts
-  and row numbers. Manrope and Plus Jakarta Sans were tried first, and both rendered with uneven letter and word
-  spacing on Linux Chrome at 12–14px. The system font is hinted for its screen and needs no download.
-- **Radius scale:** 10px for controls, 16px for cards and panels, and fully round for pills and badges.
-- **Spacing:** Tailwind's 4px scale, unchanged.
+They're defined once in `frontend/app/globals.css` (`@theme`) and used by name: `bg-page`, `bg-surface`, `bg-tint`,
+`text-ink`, `text-muted`, `text-meta`, `text-accent`, `border-line`, `border-field`. Shared class strings live in
+`frontend/components/styles.ts`. Components don't use raw hex values.
 
 ## Rejected
 
-Gradients on surfaces, glows, coloured shadows, glassmorphism, more than two elevations, and shadow-only primary
-actions. Dark mode is also out: the app was light-only before and stays light-only.
+- **Neumorphism** (2026-10-01 to 2026-10-03): replaced at the user's request.
+- **Copying Hive's brand:** its logo, name and exact colours.
+- **Placeholder navigation and controls** for features this app doesn't have.
+- **Dark mode:** the app is light only.

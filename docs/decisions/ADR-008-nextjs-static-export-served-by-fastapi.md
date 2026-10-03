@@ -1,7 +1,8 @@
 # ADR-008: Next.js static export, served by FastAPI
 
 ## Status
-Accepted
+Accepted. Amended 2026-10-03 by [ADR-009](ADR-009-supabase-auth-sign-in.md): there is now a sign-in, handled in the
+browser by supabase-js and checked by the API.
 
 ## Date
 2026-09-28

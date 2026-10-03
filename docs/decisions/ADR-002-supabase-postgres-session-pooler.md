@@ -1,7 +1,7 @@
 # ADR-002: Supabase Postgres through the session pooler
 
 ## Status
-Accepted
+Accepted. Amended 2026-10-03 by [ADR-009](ADR-009-supabase-auth-sign-in.md): Supabase Auth now handles sign-in.
 
 ## Date
 2026-09-28
