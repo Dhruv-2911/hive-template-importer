@@ -119,6 +119,14 @@ report with:
   - Four kinds of bad file were refused with their codes, and the template count didn't change.
   - An edit made before a redeploy was still there afterwards, so edits survive a container restart.
   - The full flow (import, rename, reload, duplicate, edit the copy, original unchanged) passed in a browser.
+- **Sign-in on the live URL** (3 October 2026):
+  - Health and the sign-in config are public.
+  - The data routes return 401 with `WWW-Authenticate: Bearer`.
+  - A signed-out visit to `/` goes to `/login/`.
+  - A new account (real Supabase, Confirm email off) opened the sample's overview with 12 / 58 / 346, so the API
+    accepted a real Supabase token.
+  - Search opened row 318.
+  - After signing out, the app asked for sign-in again.
 - **A performance bug found on the live app.** Import took about 13 s and duplicate about 10 s, because the ORM's bulk
   insert split 366 comments into 127 statements, each a round trip from Singapore to Mumbai. Now one batched insert and
   an in-database copy take the UI flow to 4.4 s for import and 2.6 s for duplicate. Tests pin the statement counts so it

@@ -232,7 +232,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
     session and the confirmation-email case), sign out, an API 401 without a token, and search.
   - Verify: `npm run e2e` exits 0.
 
-- [ ] **T25: Go live** (S, needs the owner)
+- [x] **T25: Go live** (S, needs the owner). Merged and checked live on 2026-10-03; results in NOTES.md
   - Owner, first:
     - In Supabase: Email provider on, *Confirm email* off, Site URL = the Render URL.
     - In Render, add these env vars: `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`.
@@ -245,7 +245,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Verify: the checks above on the live URL, recorded in NOTES.md.
 
 ### Checkpoint E: before merging
-- [ ] Screenshots of every screen reviewed by the owner
+- [x] Screenshots of every screen reviewed by the owner (the owner asked for the merge, 2026-10-03)
 - [x] `pytest`, lint, typecheck and `npm run e2e` all exit 0 on the branch (167 backend, 40 e2e; 2026-10-03)
 
 ## Human tasks (alongside the build)
