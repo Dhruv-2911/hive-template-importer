@@ -78,9 +78,9 @@ function ReportHeader({ run }: { run: ImportRun }) {
       </div>
       <div className="flex gap-4">
         {run.status === "succeeded" && (
-          <a href={api.importFileUrl(run.id)} className={ui.button}>
+          <button type="button" onClick={() => void api.downloadImportFile(run.id, run.filename)} className={ui.button}>
             Download original file
-          </a>
+          </button>
         )}
         {run.template_id && (
           <Link href={`/template/?id=${run.template_id}`} className={ui.primary}>

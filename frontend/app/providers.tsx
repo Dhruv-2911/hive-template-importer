@@ -3,7 +3,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 
+import { AuthGate } from "@/components/AuthGate";
 import { ApiError } from "@/lib/api";
+import { AuthProvider } from "@/lib/auth";
 
 export function Providers({ children }: { children: ReactNode }) {
   // No refetch on window focus: it would overwrite what the inspector sees while they're editing.
@@ -20,5 +22,11 @@ export function Providers({ children }: { children: ReactNode }) {
         },
       }),
   );
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={client}>
+      <AuthProvider>
+        <AuthGate>{children}</AuthGate>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
 }

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 import { RESIDENTIAL_EXPORT, importViaApi } from "./exports";
 
@@ -40,10 +40,10 @@ test.describe("the report for a successful import", () => {
     await expect(kept.getByRole("row", { name: /Default Value/ }).first()).toContainText("1");
     const missing = page.getByRole("region", { name: "Not in Spectora's export" });
     await expect(missing).toContainText("Severity labels");
-    await expect(page.getByRole("link", { name: "Download original file" })).toHaveAttribute(
-      "href",
-      `/api/imports/${runId}/file`,
-    );
+    // The download goes through the API with the token, and saves the original file under its own name.
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Download original file" }).click();
+    expect((await download).suggestedFilename()).toBe("InterNACHI Residential -2026-09-28.xls");
   });
 });
 

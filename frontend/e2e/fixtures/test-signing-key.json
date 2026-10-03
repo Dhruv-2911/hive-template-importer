@@ -1,0 +1,26 @@
+{
+  "_comment": "TEST-ONLY signing key for the e2e suite (ADR-009). It is trusted only by containers started with SUPABASE_JWKS set to the public half below, which production never sets. It grants nothing anywhere else.",
+  "private_jwk": {
+    "kty": "EC",
+    "crv": "P-256",
+    "x": "ylz69QUHNi_7a09Sw-ZjFRrCjjE2P7Wf9ZtA4ZXXvQM",
+    "y": "DlmE8-Ie8C1LPbG-Cham22OOPSjUGTDCffQ64ijtspI",
+    "d": "F-Rzm5kZG6N4UNhjBhoyfzVitMWqkvo0r5sZsa_Z2TI",
+    "kid": "e2e-only",
+    "alg": "ES256",
+    "use": "sig"
+  },
+  "jwks": {
+    "keys": [
+      {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "ylz69QUHNi_7a09Sw-ZjFRrCjjE2P7Wf9ZtA4ZXXvQM",
+        "y": "DlmE8-Ie8C1LPbG-Cham22OOPSjUGTDCffQ64ijtspI",
+        "kid": "e2e-only",
+        "alg": "ES256",
+        "use": "sig"
+      }
+    ]
+  }
+}
