@@ -25,14 +25,14 @@ export function ItemComments({ section, item, highlightedRow, notesByRow, edits 
   const byType = (type: string): Comment[] => item.comments.filter((c) => c.comment_type === type);
   return (
     <>
-      <header className="px-8 pb-1 pt-6">
+      <header className="px-10 pb-1 pt-8">
         <InlineName
           kind="section"
           value={section.name}
           source={section.source_name}
           onSave={(name) => edits.renameSection(section.id, name)}
           as="p"
-          className="text-sm font-semibold text-meta"
+          className="text-sm font-medium text-meta"
         />
         <InlineName
           kind="item"
@@ -40,19 +40,19 @@ export function ItemComments({ section, item, highlightedRow, notesByRow, edits 
           source={item.source_name}
           onSave={(name) => edits.renameItem(item.id, name)}
           as="h2"
-          className="text-2xl font-bold tracking-tight text-ink"
+          className="text-2xl font-semibold tracking-tight text-ink"
         />
       </header>
       {GROUPS.filter((g) => g.type !== "unknown" || byType("unknown").length > 0).map((group) => {
         const comments = byType(group.type);
         const headingId = `group-${group.type}`;
         return (
-          <section key={group.type} aria-labelledby={headingId} className="px-8 pt-8">
-            <h3 id={headingId} className="mb-4 text-sm font-bold uppercase tracking-wider text-muted">
+          <section key={group.type} aria-labelledby={headingId} className="px-10 pt-7">
+            <h3 id={headingId} className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted">
               {group.label} <span className="font-semibold text-meta">({comments.length})</span>
             </h3>
             {comments.length ? (
-              <ol className="space-y-5">
+              <ol className="space-y-3">
                 {comments.map((comment) => (
                   <CommentCard
                     key={comment.id}
@@ -65,7 +65,7 @@ export function ItemComments({ section, item, highlightedRow, notesByRow, edits 
                 ))}
               </ol>
             ) : (
-              <p className={`px-5 py-4 text-sm text-muted ${ui.well}`}>{group.empty}</p>
+              <p className={`px-4 py-3 text-sm text-muted ${ui.well}`}>{group.empty}</p>
             )}
           </section>
         );

@@ -190,7 +190,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Verify: the owner's answers (the whole app, a shared workspace, email and password, open sign-up; Hive's layout,
     flat; overview, collapsible sections, rail, search) are each traceable to a spec line.
 
-- [ ] **T19: The API requires a valid Supabase token** (M)
+- [x] **T19: The API requires a valid Supabase token** (M)
   - Acceptance:
     - Every `/api` route except health and `/api/auth/config` returns 401 `AUTH_REQUIRED` for a missing, expired,
       wrongly signed, wrong-audience, wrong-issuer, HS256 or anonymous token.
@@ -201,7 +201,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Files: `backend/app/auth.py`, `app/config.py`, `app/main.py`, `app/api_errors.py`, `app/routes/auth.py`,
     `tests/conftest.py`, `tests/test_auth.py`
 
-- [ ] **T20: Sign-in in the browser** (M)
+- [x] **T20: Sign-in in the browser** (M)
   - Acceptance:
     - `/login/` signs in and creates accounts (including the "check your inbox" case).
     - Every other page redirects to `/login/?next=` when signed out.
@@ -210,12 +210,12 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
   - Verify: `npm run lint && npm run typecheck && npm run build`; a manual sign-in against the real project.
   - Files: `frontend/lib/auth.tsx`, `lib/api.ts`, `app/providers.tsx`, `app/login/page.tsx`
 
-- [ ] **T21: Flat tokens, app rail, Templates and Import pages** (M)
+- [x] **T21: Flat tokens, app rail, Templates and Import pages** (M)
   - Acceptance: the `docs/design.md` tokens, a rail with Templates / Import from Spectora / email / Sign out, the
     `/templates/` list, `/upload/`, and the import report restyled. No neumorphic classes are left.
   - Verify: screenshots at 1440 and 1024; lint and typecheck.
 
-- [ ] **T22: The template page: overview landing and collapsible sections** (L)
+- [x] **T22: The template page: overview landing and collapsible sections** (L)
   - Acceptance: `/` and `/template/?id=` open on the Overview. The section panel expands and collapses, with
     `aria-expanded`, and the open item's section is expanded. The item view keeps every behaviour (rename, edit, notes,
     highlighted row).

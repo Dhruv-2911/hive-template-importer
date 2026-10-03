@@ -10,6 +10,7 @@ import { useTemplateEdits } from "@/lib/useTemplateEdits";
 import { ItemComments } from "./ItemComments";
 import { SectionTree } from "./SectionTree";
 import { TemplateHeader } from "./TemplateHeader";
+import { TemplateOverview } from "./TemplateOverview";
 import { LinkButton, PageMessage, RetryButton, TemplateSkeleton } from "./States";
 
 export function TemplateScreen() {
@@ -28,8 +29,9 @@ export function TemplateScreen() {
 
   useEffect(() => {
     // Scroll the comments pane only; scrollIntoView would also scroll the page and hide the header.
+    // A newly opened item or the overview starts at the top.
     const comment = row ? document.getElementById(`row-${row}`) : null;
-    if (main.current && comment) main.current.scrollTo({ top: comment.offsetTop - main.current.clientHeight / 3 });
+    main.current?.scrollTo({ top: comment ? comment.offsetTop - main.current.clientHeight / 3 : 0 });
   }, [row, selection?.item.id]);
 
   if (!id) {
@@ -59,13 +61,19 @@ export function TemplateScreen() {
 
   const template = query.data;
   const openItem = (itemId: string) => router.replace(`/template/?id=${id}&item=${itemId}`, { scroll: false });
+  const openOverview = () => router.replace(`/template/?id=${id}`, { scroll: false });
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <TemplateHeader template={template} edits={edits} />
-      <div className="flex min-h-0 flex-1 gap-2 pb-6 pl-6">
-        <SectionTree sections={template.sections} selectedItemId={selection?.item.id} onSelect={openItem} />
-        <main ref={main} className="scroll-fade scrollbar-soft relative min-w-0 flex-1 overflow-y-auto">
-          {selection && (
+      <TemplateHeader template={template} search={null} />
+      <div className="flex min-h-0 flex-1">
+        <SectionTree
+          template={template}
+          selectedItemId={selection?.item.id}
+          onSelect={openItem}
+          onOverview={openOverview}
+        />
+        <main ref={main} className="scrollbar-thin relative min-w-0 flex-1 overflow-y-auto">
+          {selection ? (
             <ItemComments
               section={selection.section}
               item={selection.item}
@@ -73,6 +81,8 @@ export function TemplateScreen() {
               notesByRow={notesByRow}
               edits={edits}
             />
+          ) : (
+            <TemplateOverview template={template} run={report.data} edits={edits} onOpenItem={openItem} />
           )}
         </main>
       </div>
@@ -86,12 +96,11 @@ function notesFor(notices: Notice[]): Map<number, Notice[]> {
   return byRow;
 }
 
-/** The item to show: the one in the URL, else the one holding the linked row, else the first. */
+/** The item to show: the one in the URL, else the one holding the linked row, else none (the Overview). */
 function select(template: TemplateTree, itemId: string | null, row: number | undefined) {
   const pairs = template.sections.flatMap((section) => section.items.map((item) => ({ section, item })));
   return (
     pairs.find(({ item }) => item.id === itemId) ??
-    (row ? pairs.find(({ item }) => item.comments.some((c) => c.source_row === row)) : undefined) ??
-    pairs[0]
+    (row ? pairs.find(({ item }) => item.comments.some((c) => c.source_row === row)) : undefined)
   );
 }

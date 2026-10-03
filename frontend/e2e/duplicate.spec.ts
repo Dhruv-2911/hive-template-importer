@@ -1,4 +1,4 @@
-import { expect, test } from "./fixtures";
+import { expect, openItem, sectionsPanel, test } from "./fixtures";
 
 import { RESIDENTIAL_EXPORT, importViaApi } from "./exports";
 
@@ -10,16 +10,16 @@ test("a copy can be changed without touching the original", async ({ page, reque
   await page.waitForURL((url) => !!url.searchParams.get("id") && url.searchParams.get("id") !== originalId);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("InterNACHI Residential -2026-09-28 (copy)");
 
-  await page.getByRole("navigation").getByRole("button", { name: /^Coverings/ }).click();
+  await openItem(page, "Roof", "Coverings");
   await page.getByRole("button", { name: "Rename section “Roof”" }).click();
   await page.getByRole("textbox", { name: "Section name" }).fill("Roof (only in the copy)");
   await page.getByRole("textbox", { name: "Section name" }).press("Enter");
-  await expect(page.getByRole("navigation")).toContainText("Roof (only in the copy)");
+  await expect(sectionsPanel(page)).toContainText("Roof (only in the copy)");
 
   await page.getByRole("link", { name: "Open the original" }).click();
   await page.waitForURL((url) => url.searchParams.get("id") === originalId);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("InterNACHI Residential -2026-09-28");
-  await expect(page.getByRole("navigation")).not.toContainText("only in the copy");
+  await expect(sectionsPanel(page)).not.toContainText("only in the copy");
 });
 
 test("the copy shows in the template list, marked as a copy", async ({ page, request }) => {

@@ -1,4 +1,4 @@
-import { expect, test } from "./fixtures";
+import { expect, openItem, sectionsPanel, test } from "./fixtures";
 
 import { RESIDENTIAL_EXPORT, importViaApi } from "./exports";
 
@@ -9,15 +9,15 @@ async function freshTemplate(request: Parameters<typeof importViaApi>[0]) {
 
 test("a renamed section is saved, marked as edited, and survives a reload", async ({ page, request }) => {
   await page.goto(`/template/?id=${await freshTemplate(request)}`);
-  await page.getByRole("navigation").getByRole("button", { name: /^Coverings/ }).click();
+  await openItem(page, "Roof", "Coverings");
 
   await page.getByRole("button", { name: "Rename section “Roof”" }).click();
   await page.getByRole("textbox", { name: "Section name" }).fill("Roof & Gutters");
   await page.getByRole("textbox", { name: "Section name" }).press("Enter");
 
-  await expect(page.getByRole("navigation")).toContainText("Roof & Gutters");
+  await expect(sectionsPanel(page)).toContainText("Roof & Gutters");
   await page.reload();
-  await expect(page.getByRole("navigation")).toContainText("Roof & Gutters");
+  await expect(sectionsPanel(page)).toContainText("Roof & Gutters");
   await page.getByRole("button", { name: "Show original" }).click();
   await expect(page.getByText("Imported as “Roof”")).toBeVisible();
 });
@@ -38,6 +38,7 @@ test("renaming one of two same-named comments leaves the other alone", async ({ 
 
 test("Escape cancels a rename without saving anything", async ({ page, request }) => {
   await page.goto(`/template/?id=${await freshTemplate(request)}`);
+  await openItem(page, "Inspection Details", "General");
   const patches: string[] = [];
   page.on("request", (r) => r.method() === "PATCH" && patches.push(r.url()));
 
@@ -51,6 +52,7 @@ test("Escape cancels a rename without saving anything", async ({ page, request }
 
 test("a blank name is refused and the inspector can keep editing", async ({ page, request }) => {
   await page.goto(`/template/?id=${await freshTemplate(request)}`);
+  await openItem(page, "Inspection Details", "General");
 
   await page.getByRole("button", { name: "Rename item “General”" }).click();
   await page.getByRole("textbox", { name: "Item name" }).fill("   ");

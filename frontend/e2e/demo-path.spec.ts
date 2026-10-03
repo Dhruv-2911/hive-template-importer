@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "./fixtures";
+import { expect, openItem, sectionsPanel, test, type Page } from "./fixtures";
 
 import { RESIDENTIAL_EXPORT } from "./exports";
 
@@ -9,7 +9,7 @@ async function renameSection(page: Page, from: string, to: string) {
   await page.getByRole("button", { name: `Rename section “${from}”` }).click();
   await page.getByRole("textbox", { name: "Section name" }).fill(to);
   await page.getByRole("textbox", { name: "Section name" }).press("Enter");
-  await expect(page.getByRole("navigation")).toContainText(to);
+  await expect(sectionsPanel(page)).toContainText(to);
 }
 
 test("upload → verify → edit → reload → duplicate → change the copy → the original is unchanged", async ({ page }) => {
@@ -24,7 +24,7 @@ test("upload → verify → edit → reload → duplicate → change the copy �
   const originalId = new URL(page.url()).searchParams.get("id");
 
   // Edit a section name and a comment's text; both survive a reload.
-  await page.getByRole("navigation").getByRole("button", { name: /^Coverings/ }).click();
+  await openItem(page, "Roof", "Coverings");
   await renameSection(page, "Roof", "Roof & Gutters");
   await page.goto(`/template/?id=${originalId}&row=12`);
   const comment = page.locator("#row-12");
@@ -35,20 +35,20 @@ test("upload → verify → edit → reload → duplicate → change the copy �
   await comment.getByRole("button", { name: "Save text" }).click();
   await expect(comment).toContainText("Siding is letting water in.");
   await page.reload();
-  await expect(page.getByRole("navigation")).toContainText("Roof & Gutters");
+  await expect(sectionsPanel(page)).toContainText("Roof & Gutters");
   await expect(page.locator("#row-12")).toContainText("Siding is letting water in.");
 
   // Duplicate, then change the copy.
   await page.getByRole("button", { name: "Duplicate" }).click();
   await page.waitForURL((url) => !!url.searchParams.get("id") && url.searchParams.get("id") !== originalId);
-  await page.getByRole("navigation").getByRole("button", { name: /^Coverings/ }).click();
+  await openItem(page, "Roof & Gutters", "Coverings"); // the copy keeps the original's edits
   await renameSection(page, "Roof & Gutters", "Roof (copy only)");
 
   // The original still has its own edits, and none of the copy's.
   await page.getByRole("link", { name: "Open the original" }).click();
   await page.waitForURL((url) => url.searchParams.get("id") === originalId);
-  await expect(page.getByRole("navigation")).toContainText("Roof & Gutters");
-  await expect(page.getByRole("navigation")).not.toContainText("copy only");
+  await expect(sectionsPanel(page)).toContainText("Roof & Gutters");
+  await expect(sectionsPanel(page)).not.toContainText("copy only");
   await page.goto(`/template/?id=${originalId}&row=12`);
   await expect(page.locator("#row-12")).toContainText("Siding is letting water in.");
 });

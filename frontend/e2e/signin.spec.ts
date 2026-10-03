@@ -98,8 +98,7 @@ test.describe("signed out", () => {
   });
 });
 
-// The Sign out button lives in the app rail, which arrives in T21.
-test.fixme("signing out returns to sign-in and protects the app again", async ({ page }) => {
+test("signing out returns to sign-in and protects the app again", async ({ page }) => {
   const seen = await mockSupabaseAuth(page);
   await page.goto("/templates/");
   await expect(page.getByText(INSPECTOR.email)).toBeVisible();

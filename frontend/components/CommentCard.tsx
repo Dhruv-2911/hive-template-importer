@@ -5,10 +5,11 @@ import { Note } from "./Note";
 import { ui } from "./styles";
 
 // The labels Spectora's own export header gives the levels: "Category (-1: Low, 0: Med, 1: High)".
+const QUIET = "border-line bg-page text-muted";
 const SEVERITY: Record<number, { label: string; className: string }> = {
-  [-1]: { label: "Low", className: "text-muted" },
-  0: { label: "Medium", className: "text-muted" },
-  1: { label: "High", className: "text-danger" },
+  [-1]: { label: "Low", className: QUIET },
+  0: { label: "Medium", className: QUIET },
+  1: { label: "High", className: "border-danger/30 bg-danger-tint text-danger" },
 };
 
 type Props = {
@@ -26,7 +27,7 @@ export function CommentCard({ comment, highlighted, notes, onRename, onSaveText 
   return (
     <li
       id={`row-${comment.source_row}`}
-      className={`px-6 py-5 ${ui.card} ${highlighted ? "outline-2 outline-offset-4 outline-note" : ""}`}
+      className={`px-5 py-4 ${ui.card} ${highlighted ? "outline-2 outline-offset-2 outline-note" : ""}`}
     >
       <div className="flex items-baseline justify-between gap-4">
         <InlineName
@@ -35,7 +36,7 @@ export function CommentCard({ comment, highlighted, notes, onRename, onSaveText 
           source={comment.source_name}
           onSave={onRename}
           as="h4"
-          className="font-bold text-ink"
+          className="font-semibold text-ink"
         />
         <span className={`${ui.badge} tabular-nums text-meta`} title="Row in the Spectora spreadsheet">
           Row {comment.source_row}
@@ -46,7 +47,9 @@ export function CommentCard({ comment, highlighted, notes, onRename, onSaveText 
         {severity && (
           <div className="flex items-center gap-1">
             <dt className="sr-only">Severity</dt>
-            <dd className={`${ui.badge} ${severity.className}`}>
+            <dd
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-semibold ${severity.className}`}
+            >
               <span aria-hidden className="size-1.5 rounded-full bg-current" />
               {severity.label} severity
             </dd>
