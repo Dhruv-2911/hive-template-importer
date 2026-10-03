@@ -7,9 +7,9 @@ type Props = { children: ReactNode; saving: boolean; error: string | undefined; 
 /** Save / Cancel and any refusal, shared by the rich-text and HTML editors. */
 export function EditorFrame({ children, saving, error, onSave, onCancel }: Props) {
   return (
-    <div className={`mt-3 rounded-card bg-base p-2 neu-pressed ${ui.focusWithin}`}>
+    <div className={`mt-3 rounded-control border border-field bg-surface ${ui.focusWithin}`}>
       {children}
-      <div className="flex items-center gap-3 px-2 pb-1.5 pt-2">
+      <div className="flex items-center gap-2 border-t border-line bg-page px-2.5 py-2">
         <button
           type="button"
           onClick={onSave}

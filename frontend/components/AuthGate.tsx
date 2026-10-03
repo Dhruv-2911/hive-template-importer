@@ -5,6 +5,7 @@ import { useEffect, type ReactNode } from "react";
 
 import { useAuth } from "@/lib/auth";
 
+import { AppShell } from "./AppShell";
 import { PageMessage, RetryButton } from "./States";
 
 /** Every page except sign-in needs a signed-in user (SPEC.md US8). */
@@ -30,5 +31,5 @@ export function AuthGate({ children }: { children: ReactNode }) {
     );
   }
   if (auth.status !== "signed-in") return <PageMessage title="Checking your sign-in…">One moment.</PageMessage>;
-  return children;
+  return <AppShell>{children}</AppShell>;
 }

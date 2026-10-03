@@ -81,8 +81,8 @@ function Toolbar({ editor }: { editor: Editor }) {
   }
 
   return (
-    <div className="px-1 pb-1 pt-1">
-      <div role="toolbar" aria-label="Formatting" className="flex flex-wrap gap-2 p-1">
+    <div className="border-b border-line">
+      <div role="toolbar" aria-label="Formatting" className="flex flex-wrap gap-1 px-1.5 py-1.5">
         <Tool label="Bold" pressed={active.bold} onClick={() => chain().toggleBold().run()}><b>B</b></Tool>
         <Tool label="Italic" pressed={active.italic} onClick={() => chain().toggleItalic().run()}><i>I</i></Tool>
         <Tool label="Underline" pressed={active.underline} onClick={() => chain().toggleUnderline().run()}><u>U</u></Tool>
@@ -100,7 +100,7 @@ function Toolbar({ editor }: { editor: Editor }) {
         </Tool>
       </div>
       {linking && (
-        <div className="flex items-center gap-2 px-1 pb-1 pt-2">
+        <div className="flex items-center gap-2 px-2 pb-2">
           <input
             aria-label="Link address"
             placeholder="www.example.com/article"
@@ -128,8 +128,8 @@ function Toolbar({ editor }: { editor: Editor }) {
   );
 }
 
-// Toolbar buttons are raised, and stay pressed in while their formatting is on.
-const TOOL = `min-w-8 rounded-control bg-base px-2.5 py-1 text-xs font-semibold motion-safe:transition-shadow ${ui.focus}`;
+// Toolbar buttons are tinted while their formatting is on (and say so with aria-pressed).
+const TOOL = `min-w-8 rounded-md px-2 py-1 text-xs font-semibold transition-colors motion-reduce:transition-none ${ui.focus}`;
 
 function Tool({ label, pressed, onClick, children }: { label: string; pressed: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
@@ -138,7 +138,7 @@ function Tool({ label, pressed, onClick, children }: { label: string; pressed: b
       aria-label={label}
       aria-pressed={pressed}
       onClick={onClick}
-      className={`${TOOL} ${pressed ? "text-accent neu-pressed-sm" : "text-ink neu-raised-sm hover:text-accent active:neu-pressed-sm"}`}
+      className={`${TOOL} ${pressed ? "bg-tint text-accent" : "text-ink hover:bg-page"}`}
     >
       {children}
     </button>

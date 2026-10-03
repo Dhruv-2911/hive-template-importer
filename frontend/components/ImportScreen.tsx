@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, Download } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
@@ -43,7 +44,7 @@ export function ImportScreen() {
 
   const run = query.data;
   return (
-    <main className="mx-auto w-full max-w-5xl space-y-10 px-6 py-12">
+    <main className="mx-auto w-full max-w-5xl space-y-8 px-8 py-8">
       <ReportHeader run={run} />
       {run.report ? (
         <>
@@ -53,7 +54,7 @@ export function ImportScreen() {
         </>
       ) : (
         <div role="alert" className={`p-6 text-sm text-ink ${ui.card}`}>
-          <p className="text-base font-bold text-danger">This file wasn&apos;t imported, and nothing was saved.</p>
+          <p className="text-base font-semibold text-danger">This file wasn&apos;t imported, and nothing was saved.</p>
           <p className="mt-1 text-muted">{run.error?.message}</p>
           <div className="mt-5">
             <LinkButton href="/templates/">Import another file</LinkButton>
@@ -68,17 +69,19 @@ function ReportHeader({ run }: { run: ImportRun }) {
   return (
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <Link href="/templates/" className={`text-sm ${ui.link}`}>
-          Templates
+        <Link href="/templates/" className={`inline-flex items-center gap-1.5 text-sm ${ui.link}`}>
+          <ArrowLeft aria-hidden className="size-4" />
+          Back to Templates
         </Link>
-        <h1 className="mt-0.5 text-3xl font-bold tracking-tight text-ink">Import report</h1>
-        <p className="mt-2 text-sm text-muted">
+        <h1 className={`mt-3 ${ui.pageTitle}`}>Import report</h1>
+        <p className="mt-1 text-sm text-muted">
           {run.filename} · {date.format(new Date(run.created_at))}
         </p>
       </div>
-      <div className="flex gap-4">
+      <div className="flex gap-3">
         {run.status === "succeeded" && (
           <button type="button" onClick={() => void api.downloadImportFile(run.id, run.filename)} className={ui.button}>
+            <Download aria-hidden className="size-4" />
             Download original file
           </button>
         )}

@@ -1,3 +1,5 @@
+import { CircleCheck, CircleX } from "lucide-react";
+
 import type { ImportReport } from "@/lib/api";
 
 import { ui } from "../styles";
@@ -15,14 +17,15 @@ export function ReportSummary({ report }: { report: ImportReport }) {
   const tone = allMatch ? "text-success" : "text-danger";
   return (
     <>
-      <div role="status" className={`flex items-start gap-5 p-6 ${ui.card}`}>
-        <span aria-hidden className={`flex size-12 shrink-0 items-center justify-center rounded-full neu-pressed ${tone}`}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" className="size-6">
-            {allMatch ? <path d="M5 12.5l4.5 4.5L19 7.5" /> : <path d="M7 7l10 10M17 7L7 17" />}
-          </svg>
+      <div role="status" className={`flex items-start gap-4 p-5 ${ui.card}`}>
+        <span
+          aria-hidden
+          className={`flex size-10 shrink-0 items-center justify-center rounded-full ${allMatch ? "bg-success-tint" : "bg-danger-tint"} ${tone}`}
+        >
+          {allMatch ? <CircleCheck className="size-5" /> : <CircleX className="size-5" />}
         </span>
         <div>
-          <p className={`text-lg font-bold tracking-tight ${tone}`}>
+          <p className={`text-base font-semibold ${tone}`}>
             {allMatch
               ? `All ${v.checked} comments were saved and match the file.`
               : `${v.matched} of ${v.checked} comments match the file.`}
@@ -38,17 +41,17 @@ export function ReportSummary({ report }: { report: ImportReport }) {
         <h2 id="counts-heading" className={`mb-4 ${ui.sectionHeading}`}>
           What came in
         </h2>
-        <dl className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+        <dl className={`grid grid-cols-2 divide-line sm:grid-cols-4 sm:divide-x ${ui.card}`}>
           <Stat term="Rows in the file" value={r.source_rows} />
           <Stat term="Comments imported" value={r.comments_imported} />
           <Stat term="Sections" value={r.sections} />
           <Stat term="Items" value={r.items} />
         </dl>
-        <dl className="mt-5 flex flex-wrap gap-3 text-sm text-muted">
+        <dl className="mt-3 flex flex-wrap gap-2 text-sm text-muted">
           {TYPES.filter(([type]) => type !== "unknown" || r.by_type.unknown).map(([type, label]) => (
-            <div key={type} className="flex gap-1.5 rounded-full bg-base px-4 py-1.5 neu-pressed-sm">
+            <div key={type} className="flex gap-1.5 rounded-full border border-line bg-surface px-3 py-1">
               <dt>{label}</dt>
-              <dd className="font-bold tabular-nums text-ink">{r.by_type[type] ?? 0}</dd>
+              <dd className="font-semibold tabular-nums text-ink">{r.by_type[type] ?? 0}</dd>
             </div>
           ))}
         </dl>
@@ -69,9 +72,10 @@ export function ReportSummary({ report }: { report: ImportReport }) {
 
 function Stat({ term, value }: { term: string; value: number }) {
   return (
-    <div className={`px-5 py-4 ${ui.card}`}>
-      <dt className="text-xs font-bold uppercase tracking-wider text-meta">{term}</dt>
-      <dd className="mt-1 text-3xl font-bold tabular-nums tracking-tight text-ink">{value}</dd>
+    // The number reads first on screen; the term still comes first for screen readers, as a <dl> requires.
+    <div className="flex flex-col-reverse px-5 py-4">
+      <dt className="mt-0.5 text-xs text-meta">{term}</dt>
+      <dd className="text-2xl font-semibold tabular-nums text-ink">{value}</dd>
     </div>
   );
 }

@@ -14,7 +14,7 @@ async function renameSection(page: Page, from: string, to: string) {
 
 test("upload → verify → edit → reload → duplicate → change the copy → the original is unchanged", async ({ page }) => {
   // Upload, and the report proves every comment arrived.
-  await page.goto("/templates/");
+  await page.goto("/upload/");
   await page.getByLabel("Choose a Spectora export").setInputFiles(RESIDENTIAL_EXPORT);
   await expect(page.getByRole("status").filter({ hasText: "match the file" })).toContainText(
     "All 366 comments were saved and match the file",

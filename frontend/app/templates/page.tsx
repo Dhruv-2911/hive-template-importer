@@ -1,21 +1,25 @@
+import { Upload } from "lucide-react";
+import Link from "next/link";
+
 import { TemplateList } from "@/components/TemplateList";
-import { UploadExport } from "@/components/UploadExport";
 import { ui } from "@/components/styles";
 
 export default function TemplatesPage() {
   return (
-    <main className="mx-auto w-full max-w-5xl space-y-10 px-6 py-12">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-ink">Templates</h1>
-        <p className="mt-2 text-sm text-muted">
-          Bring a template across from Spectora, check it arrived intact, then edit it here.
-        </p>
+    <main className="mx-auto w-full max-w-6xl px-8 py-8">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className={ui.pageTitle}>Templates</h1>
+          <p className="mt-1 text-sm text-muted">
+            Templates brought across from Spectora. Open one to check what came across and edit it.
+          </p>
+        </div>
+        <Link href="/upload/" className={ui.primary}>
+          <Upload aria-hidden className="size-4" />
+          Import from Spectora
+        </Link>
       </header>
-      <UploadExport />
-      <section aria-labelledby="list-heading" className="space-y-5">
-        <h2 id="list-heading" className={ui.sectionHeading}>
-          Your templates
-        </h2>
+      <section aria-label="Your templates" className="mt-6">
         <TemplateList />
       </section>
     </main>

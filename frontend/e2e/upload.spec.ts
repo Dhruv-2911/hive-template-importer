@@ -10,7 +10,7 @@ test("the templates page lists the sample with its counts", async ({ page }) => 
 });
 
 test("uploading an export opens its import report", async ({ page }) => {
-  await page.goto("/templates/");
+  await page.goto("/upload/");
 
   await page.getByLabel("Choose a Spectora export").setInputFiles(RESIDENTIAL_EXPORT);
 
@@ -20,7 +20,7 @@ test("uploading an export opens its import report", async ({ page }) => {
 });
 
 test("a file that isn't a spreadsheet is refused with what to do next", async ({ page }) => {
-  await page.goto("/templates/");
+  await page.goto("/upload/");
 
   await page
     .getByLabel("Choose a Spectora export")
@@ -30,5 +30,5 @@ test("a file that isn't a spreadsheet is refused with what to do next", async ({
   const refusal = page.getByRole("alert").filter({ hasText: "wasn't imported" });
   await expect(refusal).toContainText("isn't a spreadsheet");
   await expect(refusal).toContainText("Export HTML Text");
-  await expect(page).toHaveURL(/\/templates\/$/);
+  await expect(page).toHaveURL(/\/upload\/$/);
 });

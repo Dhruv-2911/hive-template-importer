@@ -7,9 +7,9 @@ export function PageMessage({ title, children, action }: { title: string; childr
   return (
     <main className="mx-auto w-full max-w-xl px-6 py-24" role="status">
       <div className={`p-8 ${ui.card}`}>
-        <h1 className="text-xl font-bold tracking-tight text-ink">{title}</h1>
+        <h1 className="text-lg font-semibold text-ink">{title}</h1>
         <div className="mt-2 text-sm text-muted">{children}</div>
-        {action && <div className="mt-6 flex gap-4">{action}</div>}
+        {action && <div className="mt-6 flex gap-3">{action}</div>}
       </div>
     </main>
   );
@@ -34,17 +34,16 @@ export function RetryButton({ onRetry }: { onRetry: () => void }) {
 export function TemplateSkeleton() {
   return (
     <div className="flex h-screen flex-col" aria-busy="true" aria-label="Loading the template">
-      <div className="space-y-2 px-6 pb-5 pt-4">
-        <div className="h-4 w-24 animate-pulse rounded-full neu-pressed-sm" />
-        <div className="h-7 w-96 animate-pulse rounded-full neu-pressed-sm" />
+      <div className="flex items-center gap-4 border-b border-line bg-surface px-6 py-3">
+        <div className="h-9 w-96 animate-pulse rounded-control bg-page" />
       </div>
-      <div className="flex min-h-0 flex-1 gap-8 pb-6 pl-6 pr-8">
-        <div className={`w-80 space-y-3 p-5 ${ui.card}`}>
+      <div className="flex min-h-0 flex-1">
+        <div className="w-80 space-y-3 border-r border-line bg-surface p-5">
           {Array.from({ length: 12 }, (_, i) => (
-            <div key={i} className="h-6 animate-pulse rounded-control neu-pressed-sm" />
+            <div key={i} className="h-6 animate-pulse rounded-control bg-page" />
           ))}
         </div>
-        <div className="flex-1 space-y-5 pt-4">
+        <div className="flex-1 space-y-5 px-10 py-8">
           {Array.from({ length: 4 }, (_, i) => (
             <div key={i} className={`h-28 animate-pulse ${ui.card}`} />
           ))}
