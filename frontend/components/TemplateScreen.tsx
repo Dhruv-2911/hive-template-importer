@@ -11,6 +11,7 @@ import { ItemComments } from "./ItemComments";
 import { SectionTree } from "./SectionTree";
 import { TemplateHeader } from "./TemplateHeader";
 import { TemplateOverview } from "./TemplateOverview";
+import { TemplateSearch } from "./TemplateSearch";
 import { LinkButton, PageMessage, RetryButton, TemplateSkeleton } from "./States";
 
 export function TemplateScreen() {
@@ -62,9 +63,11 @@ export function TemplateScreen() {
   const template = query.data;
   const openItem = (itemId: string) => router.replace(`/template/?id=${id}&item=${itemId}`, { scroll: false });
   const openOverview = () => router.replace(`/template/?id=${id}`, { scroll: false });
+  const openHit = (itemId: string, hitRow?: number) =>
+    router.replace(`/template/?id=${id}&item=${itemId}${hitRow ? `&row=${hitRow}` : ""}`, { scroll: false });
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <TemplateHeader template={template} search={null} />
+      <TemplateHeader template={template} search={<TemplateSearch template={template} onOpen={openHit} />} />
       <div className="flex min-h-0 flex-1">
         <SectionTree
           template={template}

@@ -221,12 +221,12 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
     highlighted row).
   - Verify: screenshots, and the existing e2e behaviour still holds.
 
-- [ ] **T23: Template search** (M)
+- [x] **T23: Template search** (M)
   - Acceptance: US9. A combobox and listbox; Ctrl/⌘+K, the arrow keys, Enter and Escape; results in template order with
     where each is and the match; choosing one opens the item and highlights the comment.
   - Verify: an e2e test finds a comment by a phrase from its text and opens it.
 
-- [ ] **T24: E2E behind sign-in** (M)
+- [x] **T24: E2E behind sign-in** (M)
   - Acceptance: the container runs with a fake Supabase URL and the test-only key set. All existing specs run signed
     in, with tokens minted by the test. A new spec covers the signed-out redirect, sign in, create account (both the
     session and the confirmation-email case), sign out, an API 401 without a token, and search.
@@ -246,7 +246,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 
 ### Checkpoint E: before merging
 - [ ] Screenshots of every screen reviewed by the owner
-- [ ] `pytest`, lint, typecheck and `npm run e2e` all exit 0 on the branch
+- [x] `pytest`, lint, typecheck and `npm run e2e` all exit 0 on the branch (167 backend, 40 e2e; 2026-10-03)
 
 ## Human tasks (alongside the build)
 
