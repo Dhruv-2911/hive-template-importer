@@ -7,12 +7,26 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import sessionmaker
+from starlette.responses import Response
+from starlette.types import Scope
 
 from app.api_errors import install_error_handlers
 from app.auth import TokenVerifier, require_user
 from app.config import Settings
 from app.db import make_engine
 from app.routes import auth, edits, health, imports, templates
+
+
+class FrontendFiles(StaticFiles):
+    """The exported frontend. Pages are checked again on every visit (a cheap 304 when nothing changed), so a
+    deploy shows at once; without a header, browsers reuse an old page for hours. Build files under
+    _next/static have a content hash in their name, so they're kept for a year."""
+
+    async def get_response(self, path: str, scope: Scope) -> Response:
+        response = await super().get_response(path, scope)
+        hashed = path.replace("\\", "/").startswith("_next/static/")
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable" if hashed else "no-cache"
+        return response
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -57,5 +71,5 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # Mounted last so /api routes win. html=True serves template/index.html at /template/ and 404.html for
     # unknown paths, which is what `output: 'export'` with `trailingSlash: true` produces (ADR-008).
     if Path(settings.frontend_dir).is_dir():
-        app.mount("/", StaticFiles(directory=settings.frontend_dir, html=True), name="frontend")
+        app.mount("/", FrontendFiles(directory=settings.frontend_dir, html=True), name="frontend")
     return app

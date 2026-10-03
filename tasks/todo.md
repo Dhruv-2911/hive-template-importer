@@ -264,6 +264,18 @@ clickable. They also asked for the app to open on the Templates list; that stays
     don't change. SPEC US4, ADR-007 (amended), design.md and NOTES updated.
   - Verify: two new e2e tests (insert and type, then click and save with no typing); `npm run e2e` exits 0.
 
+## Phase 6: Sessions and caching (2026-10-03, branch `session-and-cache`)
+
+The owner saw the live URL open on "The templates couldn't be loaded / Sign in to continue." It was the version from
+before sign-in, still in the browser's cache, because pages were served without a `Cache-Control` header.
+
+- [x] **T28: No stale pages, and expired sessions end on sign-in** (S)
+  - Acceptance: pages are served with `no-cache` and hashed build files with a one-year `immutable`. An expired session
+    is renewed quietly when Supabase allows it and otherwise ends on `/login/`; a 401 ends on `/login/` even when
+    Supabase's sign-out call fails. (The session behaviour already worked; the new tests pin it.)
+  - Verify: 2 backend tests and 4 e2e tests (`caching.spec.ts`, three in `signin.spec.ts`); `pytest`, lint, typecheck
+    and `npm run e2e` exit 0. After deploying, the live headers are checked with curl.
+
 ## Human tasks (alongside the build)
 
 - [ ] **H1:** Email Hive about an extension (the stated deadline, 21 Sept, has passed).

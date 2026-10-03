@@ -39,14 +39,14 @@ export function mintToken(claims: Record<string, unknown> = {}): string {
   return `${input}.${base64url(signature)}`;
 }
 
-/** The session object Supabase returns on sign-in, and supabase-js stores. */
-export function supabaseSession(email = INSPECTOR.email) {
+/** The session object Supabase returns on sign-in, and supabase-js stores. A negative `expiresIn` has expired. */
+export function supabaseSession(email = INSPECTOR.email, expiresIn = 3600) {
   const now = Math.floor(Date.now() / 1000);
   return {
-    access_token: mintToken({ email }),
+    access_token: mintToken({ email, iat: now + expiresIn - 3600, exp: now + expiresIn }),
     token_type: "bearer",
     expires_in: 3600,
-    expires_at: now + 3600,
+    expires_at: now + expiresIn,
     refresh_token: "e2e-refresh-token",
     user: {
       id: INSPECTOR.id,
@@ -63,15 +63,19 @@ export function supabaseSession(email = INSPECTOR.email) {
 }
 
 /** Playwright storage state for a browser that's already signed in. */
-export function signedInState(origin: string) {
+export function signedInState(origin: string, session = supabaseSession()) {
   return {
     cookies: [],
-    origins: [{ origin, localStorage: [{ name: STORAGE_KEY, value: JSON.stringify(supabaseSession()) }] }],
+    origins: [{ origin, localStorage: [{ name: STORAGE_KEY, value: JSON.stringify(session) }] }],
   };
 }
 
 type Mock = { status: number; body?: unknown };
-type Handlers = { signIn?: (body: { email: string; password: string }) => Mock; signUp?: (body: { email: string }) => Mock };
+type Handlers = {
+  signIn?: (body: { email: string; password: string }) => Mock;
+  signUp?: (body: { email: string }) => Mock;
+  refresh?: () => Mock; // renewing an expired session; by default it's renewed
+};
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -79,7 +83,7 @@ const CORS = {
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
 };
 
-/** Stands in for Supabase Auth's sign-in, sign-up and sign-out endpoints. Returns the requests it saw. */
+/** Stands in for Supabase Auth's sign-in, sign-up, renewal and sign-out endpoints. Returns the requests it saw. */
 export async function mockSupabaseAuth(page: Page, handlers: Handlers = {}) {
   const seen: string[] = [];
   await page.route(`${SUPABASE_URL}/auth/v1/**`, async (route: Route) => {
@@ -91,6 +95,8 @@ export async function mockSupabaseAuth(page: Page, handlers: Handlers = {}) {
     let reply: Mock = { status: 404, body: { error_code: "not_found", msg: "Not mocked" } };
     if (url.pathname.endsWith("/token") && url.searchParams.get("grant_type") === "password") {
       reply = handlers.signIn?.(body) ?? { status: 200, body: supabaseSession(body.email) };
+    } else if (url.pathname.endsWith("/token") && url.searchParams.get("grant_type") === "refresh_token") {
+      reply = handlers.refresh?.() ?? { status: 200, body: supabaseSession() };
     } else if (url.pathname.endsWith("/signup")) {
       reply = handlers.signUp?.(body) ?? { status: 200, body: supabaseSession(body.email) };
     } else if (url.pathname.endsWith("/logout")) {

@@ -99,7 +99,7 @@ report with:
 - **Measured, not assumed.** `scripts/profile_export.py` profiled both exports before any parser code was written
   (`docs/spectora-export-format.md`). Test expectations were taken from the raw file. Twice, a value I'd assumed (a row
   number, an option order) turned out wrong when I checked it, and I corrected the test, not the code.
-- **167 backend tests** (`uv run pytest`), with 97% coverage overall and 99% on the importer:
+- **169 backend tests** (`uv run pytest`), with 97% coverage overall and 99% on the importer:
   - golden tests that pin both exports to their profiled counts, row lists and order
   - variant fixtures and one test per rejection code (each also checks that nothing was written)
   - migration and RLS tests (a non-owner database role sees no rows)
@@ -108,13 +108,14 @@ report with:
   - statement-count tests that keep import and duplicate to a fixed number of database round trips
   - 30 sign-in tests: no, expired, wrongly signed, wrong-audience, other-project, HS256, unsigned and anonymous tokens
     are all refused; health and the sign-in config stay public; the app won't start without its sign-in settings
-- **42 end-to-end tests** (`npm run e2e`) against the real Docker image. They sign in with tokens minted from a
+- **46 end-to-end tests** (`npm run e2e`) against the real Docker image. They sign in with tokens minted from a
   test-only key the container trusts, and Supabase's endpoints are mocked. They include the full demo path:
   - upload, then verify
   - rename and edit text, then reload
   - duplicate, then change the copy, and the original is unchanged
   - opening and closing the editor sends no request
   - clicking answer choices adds them to the text, and typing still works
+  - an expired session is renewed quietly or ends on sign-in, even when Supabase can't be reached
   - pasted `<script>` never runs and isn't stored
   - signed-out visitors are sent to sign in and back again, the next page is only followed on this site, both
     sign-up cases (straight in, or confirm by email), sign-out, and the API's 401 without a token
@@ -136,6 +137,10 @@ report with:
   insert split 366 comments into 127 statements, each a round trip from Singapore to Mumbai. Now one batched insert and
   an in-database copy take the UI flow to 4.4 s for import and 2.6 s for duplicate. Tests pin the statement counts so it
   can't come back.
+- **Old pages after a deploy.** On 3 October a browser kept showing the version from before sign-in. It called the
+  API without a token and showed "Sign in to continue." as an error instead of the sign-in page. The server sent pages
+  without a `Cache-Control` header, so the browser reused its old copy. Pages are now checked again on every visit, and
+  only the hashed build files are cached; tests check both headers.
 
 ## Known issues
 

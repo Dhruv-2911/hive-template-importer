@@ -121,7 +121,12 @@ in an "Unclassified" group, and a blank section or item name is kept under "(bla
   says to check the inbox.
 - Without a valid Supabase access token, every `/api` route except `/api/health` and `/api/auth/config` returns
   `401 AUTH_REQUIRED`. A 401 while signed in (an expired or revoked session) signs the browser out and returns it to
-  `/login/`.
+  `/login/`, even if Supabase can't be reached to end the session.
+- A session that expired while the browser was closed is renewed quietly if Supabase allows it; otherwise the visitor
+  lands on `/login/`.
+- **No stale pages after a deploy.** Pages are served with `Cache-Control: no-cache`, so the browser checks for a new
+  version on every visit. Build files under `/_next/static/`, whose names carry a content hash, are cached for a year.
+  (Without the header, a browser kept showing the version from before sign-in, which called the API without a token.)
 - The app rail shows the signed-in email and **Sign out**, which returns to `/login/`.
 - Everyone who signs in shares one workspace: the same templates, with the last write winning.
 

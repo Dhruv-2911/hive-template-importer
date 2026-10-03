@@ -2,7 +2,7 @@ import type { Page } from "@playwright/test";
 
 import { expect, test } from "./fixtures";
 
-import { INSPECTOR, mockSupabaseAuth } from "./auth";
+import { INSPECTOR, SUPABASE_URL, mockSupabaseAuth, signedInState, supabaseSession } from "./auth";
 
 // SPEC.md US8: the whole app sits behind sign-in (ADR-009).
 
@@ -121,4 +121,44 @@ test("an expired session on the server signs the browser out", async ({ page }) 
   await page.goto("/templates/");
 
   await expect(page).toHaveURL(/\/login\/\?next=%2Ftemplates%2F$/);
+});
+
+test("a refused session ends on sign-in even when Supabase can't be reached", async ({ page }) => {
+  await mockSupabaseAuth(page);
+  // Registered last, so it wins: ending the session at Supabase fails with a network error.
+  await page.route(`${SUPABASE_URL}/auth/v1/logout**`, (route) => route.abort("internetdisconnected"));
+  await page.route("**/api/templates", (route) =>
+    route.fulfill({ status: 401, json: { error: { code: "AUTH_REQUIRED", message: "Sign in to continue.", details: {} } } }),
+  );
+
+  await page.goto("/");
+
+  await expect(page).toHaveURL(/\/login\/\?next=%2F$/);
+  await expect(page.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
+});
+
+test.describe("a session that expired while the browser was closed", () => {
+  test.use({
+    storageState: async ({ baseURL }, provide) =>
+      provide(signedInState(new URL(baseURL!).origin, supabaseSession(INSPECTOR.email, -60))),
+  });
+
+  test("is renewed quietly when Supabase allows it", async ({ page }) => {
+    const seen = await mockSupabaseAuth(page);
+    await page.goto("/");
+    await expect(page.getByText("Template overview")).toBeVisible();
+    expect(seen).toContain("POST /auth/v1/token?grant_type=refresh_token");
+  });
+
+  test("ends on sign-in when it can't be renewed", async ({ page }) => {
+    const seen = await mockSupabaseAuth(page, {
+      refresh: () => ({
+        status: 400,
+        body: { code: 400, error_code: "refresh_token_not_found", msg: "Invalid Refresh Token: Refresh Token Not Found" },
+      }),
+    });
+    await page.goto("/");
+    await expect(page).toHaveURL(/\/login\/\?next=%2F$/);
+    expect(seen).toContain("POST /auth/v1/token?grant_type=refresh_token");
+  });
 });
