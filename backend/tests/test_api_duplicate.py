@@ -117,7 +117,7 @@ def test_copying_something_that_does_not_exist_is_not_found(client):
 
 def test_a_copy_that_fails_part_way_leaves_nothing_behind(make_client, clean_db, original):
     client = make_client()
-    unsafe = TestClient(client.app, raise_server_exceptions=False)
+    unsafe = TestClient(client.app, raise_server_exceptions=False, headers=dict(client.headers))
     with clean_db.begin() as connection:
         connection.execute(
             text(

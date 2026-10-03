@@ -10,6 +10,11 @@ from app.main import create_app
 
 if __name__ == "__main__":
     # The engine is created lazily, so this URL is never connected to.
-    settings = Settings(database_url="postgresql://unused@localhost/unused", frontend_dir="/nonexistent")
+    settings = Settings(
+        database_url="postgresql://unused@localhost/unused",
+        frontend_dir="/nonexistent",
+        supabase_url="https://unused.supabase.co",
+        supabase_publishable_key="unused",
+    )
     app = create_app(settings)
     print(json.dumps(app.openapi(), indent=2, sort_keys=True))

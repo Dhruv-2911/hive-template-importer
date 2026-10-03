@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 
 from app.config import Settings
 from app.main import create_app
+from tests.auth_tokens import AUTH_SETTINGS
 
 
 def make_export(root):
@@ -15,7 +16,9 @@ def make_export(root):
 
 def test_serves_exported_pages_by_directory(tmp_path, database_url):
     client = TestClient(
-        create_app(Settings(database_url=database_url, frontend_dir=str(make_export(tmp_path))))
+        create_app(
+            Settings(database_url=database_url, frontend_dir=str(make_export(tmp_path)), **AUTH_SETTINGS)
+        )
     )
 
     assert client.get("/").text == "<p>home</p>"
@@ -24,7 +27,9 @@ def test_serves_exported_pages_by_directory(tmp_path, database_url):
 
 def test_adds_the_trailing_slash_next_links_expect(tmp_path, database_url):
     client = TestClient(
-        create_app(Settings(database_url=database_url, frontend_dir=str(make_export(tmp_path))))
+        create_app(
+            Settings(database_url=database_url, frontend_dir=str(make_export(tmp_path)), **AUTH_SETTINGS)
+        )
     )
 
     response = client.get("/templates", follow_redirects=False)
@@ -35,7 +40,9 @@ def test_adds_the_trailing_slash_next_links_expect(tmp_path, database_url):
 
 def test_unknown_paths_get_the_exported_404_page(tmp_path, database_url):
     client = TestClient(
-        create_app(Settings(database_url=database_url, frontend_dir=str(make_export(tmp_path))))
+        create_app(
+            Settings(database_url=database_url, frontend_dir=str(make_export(tmp_path)), **AUTH_SETTINGS)
+        )
     )
 
     response = client.get("/no-such-page/")
@@ -46,7 +53,9 @@ def test_unknown_paths_get_the_exported_404_page(tmp_path, database_url):
 
 def test_api_routes_are_not_shadowed_by_the_frontend(tmp_path, database_url):
     client = TestClient(
-        create_app(Settings(database_url=database_url, frontend_dir=str(make_export(tmp_path))))
+        create_app(
+            Settings(database_url=database_url, frontend_dir=str(make_export(tmp_path)), **AUTH_SETTINGS)
+        )
     )
 
     assert client.get("/api/health").json() == {"status": "ok"}
@@ -54,7 +63,9 @@ def test_api_routes_are_not_shadowed_by_the_frontend(tmp_path, database_url):
 
 def test_runs_without_a_frontend_build(tmp_path, database_url):
     missing = tmp_path / "not-built"
-    client = TestClient(create_app(Settings(database_url=database_url, frontend_dir=str(missing))))
+    client = TestClient(
+        create_app(Settings(database_url=database_url, frontend_dir=str(missing), **AUTH_SETTINGS))
+    )
 
     assert client.get("/api/health").status_code == 200
     assert client.get("/").status_code == 404

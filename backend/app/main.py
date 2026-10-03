@@ -2,21 +2,26 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import sessionmaker
 
 from app.api_errors import install_error_handlers
+from app.auth import TokenVerifier, require_user
 from app.config import Settings
 from app.db import make_engine
-from app.routes import edits, health, imports, templates
+from app.routes import auth, edits, health, imports, templates
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Build the app. Run with `uvicorn app.main:create_app --factory`."""
     settings = settings or Settings()
+    if not (settings.supabase_url and settings.supabase_publishable_key):
+        # Fail at start-up rather than serve an app nobody can sign in to.
+        # On Render, a failed start leaves the previous deploy serving.
+        raise RuntimeError("SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY must be set (ADR-009).")
     engine = make_engine(settings.database_url)
 
     @asynccontextmanager
@@ -28,6 +33,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = settings
     app.state.engine = engine
     app.state.sessions = sessionmaker(engine, expire_on_commit=False)
+    app.state.verifier = TokenVerifier(settings.supabase_url, settings.supabase_jwks)
     install_error_handlers(app)
     # A template tree is ~230 KB of JSON; gzip brings it to a fraction of that over the Singapore link.
     app.add_middleware(GZipMiddleware, minimum_size=1000)
@@ -40,10 +46,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             allow_headers=["*"],
         )
 
+    # Public: the uptime monitor's ping and what the browser needs to sign in. Everything else needs a token.
     app.include_router(health.router, prefix="/api")
-    app.include_router(imports.router, prefix="/api")
-    app.include_router(templates.router, prefix="/api")
-    app.include_router(edits.router, prefix="/api")
+    app.include_router(auth.router, prefix="/api")
+    signed_in = [Depends(require_user)]
+    app.include_router(imports.router, prefix="/api", dependencies=signed_in)
+    app.include_router(templates.router, prefix="/api", dependencies=signed_in)
+    app.include_router(edits.router, prefix="/api", dependencies=signed_in)
 
     # Mounted last so /api routes win. html=True serves template/index.html at /template/ and 404.html for
     # unknown paths, which is what `output: 'export'` with `trailingSlash: true` produces (ADR-008).

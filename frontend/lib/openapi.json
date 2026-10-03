@@ -1,6 +1,24 @@
 {
   "components": {
     "schemas": {
+      "AuthConfig": {
+        "properties": {
+          "supabase_publishable_key": {
+            "title": "Supabase Publishable Key",
+            "type": "string"
+          },
+          "supabase_url": {
+            "title": "Supabase Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "supabase_url",
+          "supabase_publishable_key"
+        ],
+        "title": "AuthConfig",
+        "type": "object"
+      },
       "Body_create_import_api_imports_post": {
         "properties": {
           "file": {
@@ -846,6 +864,13 @@
         "title": "Verification",
         "type": "object"
       }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "description": "A Supabase access token for a signed-in user.",
+        "scheme": "bearer",
+        "type": "http"
+      }
     }
   },
   "info": {
@@ -854,6 +879,25 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/auth/config": {
+      "get": {
+        "description": "What the browser needs to sign in. Both values are public by design (ADR-009).",
+        "operationId": "auth_config_api_auth_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthConfig"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Auth Config"
+      }
+    },
     "/api/comments/{comment_id}": {
       "patch": {
         "operationId": "edit_comment_api_comments__comment_id__patch",
@@ -911,6 +955,11 @@
             "description": "Unprocessable Entity"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Edit Comment"
       }
     },
@@ -965,6 +1014,11 @@
             "description": "Unprocessable Entity"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Import"
       }
     },
@@ -1015,6 +1069,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Get Import"
       }
     },
@@ -1063,6 +1122,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Download Import File"
       }
     },
@@ -1123,6 +1187,11 @@
             "description": "Unprocessable Entity"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Rename Item"
       }
     },
@@ -1183,6 +1252,11 @@
             "description": "Unprocessable Entity"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Rename Section"
       }
     },
@@ -1205,6 +1279,11 @@
             "description": "Successful Response"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "List Templates"
       }
     },
@@ -1255,6 +1334,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Get Template"
       },
       "patch": {
@@ -1313,6 +1397,11 @@
             "description": "Unprocessable Entity"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Rename Template"
       }
     },
@@ -1363,6 +1452,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Duplicate"
       }
     }

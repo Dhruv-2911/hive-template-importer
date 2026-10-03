@@ -11,6 +11,7 @@ from sqlalchemy import Engine, text
 from app.config import Settings
 from app.db import make_engine
 from app.main import create_app
+from tests.auth_tokens import AUTH_SETTINGS, auth_header
 
 # The compose file creates this database next to the app's own (docker compose up -d db).
 DEFAULT_TEST_DATABASE_URL = "postgresql://hive:hive@localhost:5433/hive_test"
@@ -74,12 +75,16 @@ def residential_bytes() -> bytes:
 
 @pytest.fixture
 def make_client(clean_db, database_url):
-    """A client for the real app on an empty test database. Pass Settings overrides as keyword arguments."""
+    """A client for the real app on an empty test database, signed in unless `signed_in=False`.
+
+    Pass Settings overrides as keyword arguments."""
     clients = []
 
-    def build(**overrides) -> TestClient:
-        settings = Settings(database_url=database_url, frontend_dir="/nonexistent", **overrides)
-        client = TestClient(create_app(settings))
+    def build(*, signed_in: bool = True, **overrides) -> TestClient:
+        settings = Settings(
+            **{"database_url": database_url, "frontend_dir": "/nonexistent", **AUTH_SETTINGS, **overrides}
+        )
+        client = TestClient(create_app(settings), headers=auth_header() if signed_in else None)
         client.__enter__()
         clients.append(client)
         return client

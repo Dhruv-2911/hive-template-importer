@@ -12,6 +12,12 @@ class Settings(BaseSettings):
     frontend_dir: str = "../frontend/out"
     # The committed export the live app opens on (SPEC.md US7). Relative to backend/ in development.
     sample_export: str = "../InterNACHI Commercial Template-2026-09-28.xls"
+    # Supabase Auth (ADR-009). The web app refuses to start without the first two; the seed doesn't use them.
+    supabase_url: str = ""
+    supabase_publishable_key: str = ""
+    # Tests only: a fixed JSON key set used instead of fetching the project's published keys.
+    # Never set in production.
+    supabase_jwks: str = ""
 
     @property
     def max_upload_bytes(self) -> int:

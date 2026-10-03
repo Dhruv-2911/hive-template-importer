@@ -17,6 +17,11 @@ class ErrorBody(BaseModel):
     error: ErrorDetail
 
 
+class AuthConfig(BaseModel):
+    supabase_url: str
+    supabase_publishable_key: str
+
+
 class Reconciliation(BaseModel):
     source_rows: int
     blank_rows: list[int]
