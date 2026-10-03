@@ -134,7 +134,8 @@ report with:
 
 ## Known issues
 
-- **No delete,** so my test imports on the live database can only be removed with SQL.
+- **No delete,** so a template imported by mistake can only be removed with SQL. My test imports were removed that
+  way on 3 October, leaving only the sample.
 - **Render's free tier** sleeps when idle. An external monitor pings `/api/health` every 10 minutes to prevent it.
 - **Saving rewrites whitespace:** once a comment's text is edited, TipTap normalizes its whitespace. The imported text is
   always one click away under "Show original text".
@@ -145,7 +146,9 @@ report with:
 
 ## Time spent
 
-**[Fill in.]** The build history is 31 commits between 29 September and 1 October 2026 (`git log`).
+**About 8 hours in total**, between 28 September and 3 October 2026. That covers reading the brief and analysing the
+exports, the spec and decisions, the importer and schema, the editor and duplicate, tests, deployment and live checks,
+sign-in and the layout, and these notes. It doesn't include recording the video.
 
 ## Credits
 

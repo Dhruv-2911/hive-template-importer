@@ -180,7 +180,7 @@ scaffolding not counted). Every task also has to meet the Definition of Done in 
 
 ### Checkpoint D: complete
 - [x] SPEC.md success criteria 1–8 all met (checked live 2026-10-01; evidence in NOTES.md → How I checked)
-- [ ] Repo, live URL, video and NOTES.md ready to send (remaining: the video, time spent in NOTES.md, reviewer access to the private repo. Test data was removed from production on 2026-10-03: 11 templates and 11 import runs, leaving the untouched sample)
+- [ ] Repo, live URL, video and NOTES.md ready to send (remaining: the video and reviewer access to the private repo. Test data was removed from production on 2026-10-03: 11 templates and 11 import runs, leaving the untouched sample)
 
 ## Phase 4: Sign-in and Hive's layout (2026-10-03, branch `auth-and-layout`)
 
